@@ -2,7 +2,6 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-
     <meta
         name="viewport"
         content="width=device-width, initial-scale=1.0"
@@ -161,7 +160,7 @@
                 ),
                 radial-gradient(
                     circle at 82% 70%,
-                    rgba(124, 58, 237, 0.30),
+                    rgba(124, 58, 237, 0.3),
                     transparent 36%
                 ),
                 linear-gradient(
@@ -4528,6 +4527,19 @@
         const ENTRY_ANIMATION_MINIMUM =
             2300;
 
+        /*
+         * Três horas sem atividade.
+         */
+        const INACTIVITY_TIMEOUT_MS =
+            3 * 60 * 60 * 1000;
+
+        /*
+         * Tempo máximo para tentar salvar observações pendentes
+         * antes de retornar ao index.html.
+         */
+        const INACTIVITY_SAVE_GRACE_MS =
+            2500;
+
         const VENDOR_STATUS =
             "COMENTÁRIOS PARA O VENDOR";
 
@@ -4694,6 +4706,13 @@
         let chartAnimationGeneration = 0;
 
         let directLinkHandled = false;
+
+        let lastActivityAt =
+            Date.now();
+
+        let inactivityTimer = null;
+        let inactivityRedirecting = false;
+        let lastActivityEventHandledAt = 0;
 
         const observationTimers =
             new Map();
@@ -4956,6 +4975,216 @@
             byId("logTableBody");
 
         /* =====================================================
+           INATIVIDADE — RETORNO AO INDEX.HTML APÓS 3 HORAS
+           ===================================================== */
+
+        function getIndexPageUrl() {
+            /*
+             * Mantém o mesmo domínio e a mesma pasta do sistema,
+             * removendo parâmetros e hash.
+             */
+            return new URL(
+                "./index.html",
+                window.location.href
+            ).href;
+        }
+
+        function wait(milliseconds) {
+            return new Promise(resolve => {
+                window.setTimeout(
+                    resolve,
+                    milliseconds
+                );
+            });
+        }
+
+        async function redirectToIndexAfterInactivity() {
+            if (inactivityRedirecting) {
+                return;
+            }
+
+            inactivityRedirecting =
+                true;
+
+            if (inactivityTimer) {
+                window.clearTimeout(
+                    inactivityTimer
+                );
+
+                inactivityTimer =
+                    null;
+            }
+
+            /*
+             * Tenta salvar observações ainda pendentes antes do
+             * redirecionamento, sem impedir indefinidamente a saída.
+             */
+            try {
+                await Promise.race([
+                    flushAllObservations(),
+
+                    wait(
+                        INACTIVITY_SAVE_GRACE_MS
+                    )
+                ]);
+            } catch (error) {
+                console.warn(
+                    "Não foi possível concluir todos os salvamentos antes do redirecionamento:",
+                    error
+                );
+            } finally {
+                window.location.replace(
+                    getIndexPageUrl()
+                );
+            }
+        }
+
+        function scheduleInactivityCheck() {
+            if (inactivityRedirecting) {
+                return;
+            }
+
+            if (inactivityTimer) {
+                window.clearTimeout(
+                    inactivityTimer
+                );
+            }
+
+            const elapsed =
+                Date.now() -
+                lastActivityAt;
+
+            const remaining =
+                INACTIVITY_TIMEOUT_MS -
+                elapsed;
+
+            if (remaining <= 0) {
+                redirectToIndexAfterInactivity();
+
+                return;
+            }
+
+            inactivityTimer =
+                window.setTimeout(
+                    () => {
+                        const inactiveFor =
+                            Date.now() -
+                            lastActivityAt;
+
+                        if (
+                            inactiveFor >=
+                            INACTIVITY_TIMEOUT_MS
+                        ) {
+                            redirectToIndexAfterInactivity();
+                        } else {
+                            scheduleInactivityCheck();
+                        }
+                    },
+                    remaining
+                );
+        }
+
+        function registerUserActivity() {
+            if (inactivityRedirecting) {
+                return;
+            }
+
+            const now =
+                Date.now();
+
+            /*
+             * Limita o processamento de eventos contínuos,
+             * principalmente mousemove e scroll.
+             */
+            if (
+                now -
+                lastActivityEventHandledAt <
+                1000
+            ) {
+                return;
+            }
+
+            lastActivityEventHandledAt =
+                now;
+
+            lastActivityAt =
+                now;
+
+            scheduleInactivityCheck();
+        }
+
+        function checkInactivityImmediately() {
+            if (inactivityRedirecting) {
+                return;
+            }
+
+            const inactiveFor =
+                Date.now() -
+                lastActivityAt;
+
+            if (
+                inactiveFor >=
+                INACTIVITY_TIMEOUT_MS
+            ) {
+                redirectToIndexAfterInactivity();
+            } else {
+                scheduleInactivityCheck();
+            }
+        }
+
+        function initializeInactivityControl() {
+            const activityEvents = [
+                "pointerdown",
+                "mousedown",
+                "mousemove",
+                "touchstart",
+                "keydown",
+                "scroll",
+                "wheel"
+            ];
+
+            activityEvents.forEach(
+                eventName => {
+                    window.addEventListener(
+                        eventName,
+                        registerUserActivity,
+                        {
+                            passive: true,
+                            capture: true
+                        }
+                    );
+                }
+            );
+
+            document.addEventListener(
+                "visibilitychange",
+                () => {
+                    if (
+                        document.visibilityState ===
+                        "visible"
+                    ) {
+                        checkInactivityImmediately();
+                    }
+                }
+            );
+
+            window.addEventListener(
+                "focus",
+                checkInactivityImmediately
+            );
+
+            window.addEventListener(
+                "pageshow",
+                checkInactivityImmediately
+            );
+
+            lastActivityAt =
+                Date.now();
+
+            scheduleInactivityCheck();
+        }
+
+        /* =====================================================
            ANIMAÇÃO DE ENTRADA
            ===================================================== */
 
@@ -5179,7 +5408,10 @@
                         normalized
                 );
 
-            if (currentStatus !== undefined) {
+            if (
+                currentStatus !==
+                undefined
+            ) {
                 return currentStatus;
             }
 
@@ -5239,7 +5471,8 @@
                     new TextEncoder()
                         .encode(source);
 
-                let binary = "";
+                let binary =
+                    "";
 
                 bytes.forEach(byte => {
                     binary +=
@@ -5275,7 +5508,8 @@
                 return [];
             }
 
-            const result = [];
+            const result =
+                [];
 
             Object.keys(value)
                 .forEach(key => {
@@ -5356,7 +5590,8 @@
                     result.length - 1
                 ].every(
                     value =>
-                        clean(value) === ""
+                        clean(value) ===
+                        ""
                 )
             ) {
                 result.pop();
@@ -5408,8 +5643,11 @@
             return new Intl.DateTimeFormat(
                 "pt-BR",
                 {
-                    dateStyle: "short",
-                    timeStyle: "short"
+                    dateStyle:
+                        "short",
+
+                    timeStyle:
+                        "short"
                 }
             ).format(date);
         }
@@ -5418,9 +5656,14 @@
             return new Intl.DateTimeFormat(
                 "pt-BR",
                 {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric"
+                    day:
+                        "2-digit",
+
+                    month:
+                        "2-digit",
+
+                    year:
+                        "numeric"
                 }
             ).format(date);
         }
@@ -5456,7 +5699,10 @@
 
             return local
                 .toISOString()
-                .slice(0, 10);
+                .slice(
+                    0,
+                    10
+                );
         }
 
         function getEmailAgeDays(value) {
@@ -5732,17 +5978,31 @@
             title = ""
         ) {
             const titles = {
-                success: "Concluído",
-                error: "Erro",
-                warning: "Atenção",
-                info: "Sincronização"
+                success:
+                    "Concluído",
+
+                error:
+                    "Erro",
+
+                warning:
+                    "Atenção",
+
+                info:
+                    "Sincronização"
             };
 
             const icons = {
-                success: "✓",
-                error: "✕",
-                warning: "⚠",
-                info: "↻"
+                success:
+                    "✓",
+
+                error:
+                    "✕",
+
+                warning:
+                    "⚠",
+
+                info:
+                    "↻"
             };
 
             const toast =
@@ -5909,7 +6169,8 @@
         const headerContext =
             headerCanvas.getContext("2d");
 
-        let wavePhase = 0;
+        let wavePhase =
+            0;
 
         function resizeCanvas() {
             const rectangle =
@@ -5964,23 +6225,41 @@
 
             [
                 {
-                    amplitude: 31,
-                    frequency: 0.005,
-                    phase: 0,
+                    amplitude:
+                        31,
+
+                    frequency:
+                        0.005,
+
+                    phase:
+                        0,
+
                     color:
                         "rgba(37,99,235,1)"
                 },
                 {
-                    amplitude: 25,
-                    frequency: 0.0063,
-                    phase: 1.4,
+                    amplitude:
+                        25,
+
+                    frequency:
+                        0.0063,
+
+                    phase:
+                        1.4,
+
                     color:
                         "rgba(96,165,250,.9)"
                 },
                 {
-                    amplitude: 20,
-                    frequency: 0.0042,
-                    phase: 2.6,
+                    amplitude:
+                        20,
+
+                    frequency:
+                        0.0042,
+
+                    phase:
+                        2.6,
+
                     color:
                         "rgba(124,58,237,.85)"
                 }
@@ -6024,7 +6303,8 @@
                 headerContext.stroke();
             });
 
-            wavePhase += 0.01;
+            wavePhase +=
+                0.01;
 
             requestAnimationFrame(
                 drawWaves
@@ -6267,7 +6547,9 @@
             }
 
             if (!labels.length) {
-                labels.push("GERAL");
+                labels.push(
+                    "GERAL"
+                );
             }
 
             profileDiscipline.innerHTML =
@@ -6416,7 +6698,9 @@
                 return currentUser;
             }
 
-            return openProfile(true);
+            return openProfile(
+                true
+            );
         }
 
         function applyProfileMissingFilter(
@@ -6438,7 +6722,8 @@
                 !profileDisciplineName ||
                 comparable(
                     profileDisciplineName
-                ) === "ONSH"
+                ) ===
+                "ONSH"
             ) {
                 disciplineFilter.value =
                     "";
@@ -6709,8 +6994,11 @@
                     120
                 );
 
-            let bestIndex = -1;
-            let bestScore = -1;
+            let bestIndex =
+                -1;
+
+            let bestScore =
+                -1;
 
             for (
                 let rowIndex = 0;
@@ -6721,7 +7009,8 @@
                     rows[rowIndex] ||
                     [];
 
-                let score = 0;
+                let score =
+                    0;
 
                 for (
                     let columnIndex =
@@ -6813,7 +7102,9 @@
                 rows[headerIndex] ||
                 [];
 
-            const result = [];
+            const result =
+                [];
+
             const grouped =
                 new Map();
 
@@ -6909,13 +7200,20 @@
             parsedDisciplines,
             headerIndex
         ) {
-            const result = [];
+            const result =
+                [];
+
             const grouped =
                 new Map();
 
-            let currentDocument = "";
-            let currentPackage = "";
-            let currentDescription = "";
+            let currentDocument =
+                "";
+
+            let currentPackage =
+                "";
+
+            let currentDescription =
+                "";
 
             for (
                 let rowIndex =
@@ -6949,9 +7247,6 @@
                         ]
                     );
 
-                /*
-                 * Coluna F.
-                 */
                 const rawWorkflow =
                     clean(
                         row[
@@ -6966,9 +7261,6 @@
                         ]
                     );
 
-                /*
-                 * Colunas U e V.
-                 */
                 const rawPrNumber =
                     clean(
                         row[
@@ -7119,7 +7411,8 @@
                                 COLUMNS.PO_NUMBER
                         },
 
-                        disciplines: {}
+                        disciplines:
+                            {}
                     };
 
                     parsedDisciplines
@@ -8895,12 +9188,6 @@
                 uploadProgressBar.style.width =
                     "75%";
 
-                /*
-                 * Ao trocar a planilha:
-                 * F redefine o status;
-                 * U redefine a PR;
-                 * V redefine a PO.
-                 */
                 await synchronizePackages({
                     preferSpreadsheetWorkflow:
                         true,
@@ -11313,7 +11600,7 @@
             const key =
                 packageData.firebaseKey;
 
-            clearTimeout(
+            window.clearTimeout(
                 observationTimers.get(
                     key
                 )
@@ -11830,6 +12117,7 @@
                 window.setTimeout(
                     () => {
                         renderChart();
+
                         renderChartPackageList(
                             true
                         );
@@ -11884,6 +12172,7 @@
                 "chartPage"
             ) {
                 renderChart();
+
                 renderChartPackageList(
                     false
                 );
@@ -11972,7 +12261,9 @@
         profileButton.addEventListener(
             "click",
             () => {
-                openProfile(false);
+                openProfile(
+                    false
+                );
             }
         );
 
@@ -12090,6 +12381,7 @@
                             });
 
                         renderChart();
+
                         renderChartPackageList(
                             true
                         );
@@ -12621,6 +12913,12 @@
                     false;
             }
         }
+
+        /*
+         * O controle começa assim que o HTML é executado.
+         * Qualquer atividade reinicia o prazo de três horas.
+         */
+        initializeInactivityControl();
 
         startApplication();
     </script>
