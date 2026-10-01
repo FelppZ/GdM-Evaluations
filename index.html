@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GdM Evaluations | MODEC</title>
+<link rel="icon" type="image/png" href="https://logosandtypes.com/wp-content/uploads/2025/05/MODEC-scaled.png">
+
+<style>
+    :root {
+        --black: #0b0f19;
+        --black-soft: #172033;
+        --blue: #2563eb;
+        --blue-dark: #1d4ed8;
+        --blue-light: #60a5fa;
+        --blue-soft: #eff6ff;
+        --purple: #7c3aed;
+        --purple-dark: #6d28d9;
+        --text: #0f172a;
+        --muted: #64748b;
+        --border: #e2e8f0;
+        --font: "Bahnschrift Light", "Segoe UI", Arial, sans-serif;
+        --font-bold: "Bahnschrift SemiBold", "Segoe UI", Arial, sans-serif;
+        --shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+        --shadow-large: 0 20px 55px rgba(15, 23, 42, 0.16);
+        --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+        min-height: 100vh;
+        margin: 0;
+        color: var(--text);
+        background: linear-gradient(135deg, #f7fafc 0%, #ffffff 45%, #f3f7ff 100%);
+        font-family: var(--font);
+    }
+
+    /* ---------- HEADER ---------- */
+    .app-header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        display: flex;
+        min-height: 92px;
+        align-items: center;
+        padding: 16px 36px;
+        overflow: hidden;
+        color: #fff;
+        background: var(--black);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.23);
+    }
+
+    .app-header::before {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        content: "";
+        background:
+            radial-gradient(circle at 10% 40%, rgba(37, 99, 235, 0.4), transparent 35%),
+            radial-gradient(circle at 90% 30%, rgba(124, 58, 237, 0.3), transparent 34%);
+    }
+
+    #headerCanvas {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        opacity: 0.22;
+        pointer-events: none;
+    }
+
+    .brand {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        min-width: 0;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .brand-logo {
+        width: auto;
+        height: 40px;
+        flex: 0 0 auto;
+        object-fit: contain;
+    }
+
+    .brand-logo.shell { height: 44px; }
+
+    .brand-line {
+        width: 2px;
+        height: 38px;
+        background: rgba(255, 255, 255, 0.48);
+    }
+
+    .brand-title {
+        font-family: var(--font-bold);
+        font-size: 1.38rem;
+        letter-spacing: 0.08em;
+        white-space: nowrap;
+    }
+
+    /* ---------- MAIN ---------- */
+    main {
+        display: flex;
+        min-height: calc(100vh - 92px);
+        align-items: center;
+        justify-content: center;
+        padding: 48px 24px;
+    }
+
+    .options {
+        display: grid;
+        width: 100%;
+        max-width: 880px;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 28px;
+    }
+
+    .option {
+        --accent: var(--blue);
+        --accent-dark: var(--blue-dark);
+
+        display: flex;
+        min-height: 270px;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: space-between;
+        padding: 32px;
+
+        color: var(--text);
+        text-decoration: none;
+        background: #fff;
+        border: 1px solid var(--border);
+        border-top: 6px solid var(--accent);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+
+        transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+                    box-shadow 0.25s ease,
+                    background 0.25s ease,
+                    color 0.25s ease;
+    }
+
+    .option.cmms {
+        --accent: var(--purple);
+        --accent-dark: var(--purple-dark);
+    }
+
+    .option:hover,
+    .option:focus-visible {
+        transform: translateY(-6px);
+        color: #fff;
+        background: linear-gradient(145deg, var(--accent), var(--accent-dark));
+        box-shadow: var(--shadow-large);
+        outline: none;
+    }
+
+    .option:focus-visible { outline: 3px solid var(--blue-light); outline-offset: 4px; }
+
+    .option-icon {
+        display: grid;
+        width: 64px;
+        height: 64px;
+        place-items: center;
+        color: var(--accent);
+        background: var(--blue-soft);
+        border-radius: 14px;
+        transition: inherit;
+    }
+
+    .option.cmms .option-icon { background: #f5f3ff; }
+
+    .option:hover .option-icon,
+    .option:focus-visible .option-icon {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.18);
+    }
+
+    .option-icon svg { width: 34px; height: 34px; }
+
+    .option-name {
+        margin: 28px 0 8px;
+        font-family: var(--font-bold);
+        font-size: 1.6rem;
+        letter-spacing: 0.02em;
+    }
+
+    .option-desc {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.98rem;
+        line-height: 1.45;
+        transition: color 0.25s ease;
+    }
+
+    .option:hover .option-desc,
+    .option:focus-visible .option-desc { color: rgba(255, 255, 255, 0.85); }
+
+    @media (max-width: 720px) {
+        .app-header { padding: 14px 18px; }
+        .brand { gap: 10px; }
+        .brand-logo { height: 28px; }
+        .brand-logo.shell { height: 32px; }
+        .brand-line { height: 30px; }
+        .brand-title { font-size: 1rem; }
+        .options { grid-template-columns: 1fr; }
+        .option { min-height: 220px; padding: 24px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .option, .option * { transition: none; }
+        .option:hover, .option:focus-visible { transform: none; }
+    }
+</style>
+</head>
+
+<body>
+
+<header class="app-header">
+    <canvas id="headerCanvas"></canvas>
+
+    <div class="brand">
+        <img class="brand-logo" alt="MODEC"
+             src="https://i0.wp.com/gcci.gy/wp-content/uploads/2025/01/logo-MODEC-1-Faneeza-Karim.png?ssl=1">
+
+        <img class="brand-logo shell" alt="Shell" id="shellLogo"
+             src="https://thumb.wikimedia.org/wikipedia/en/thumb/e/e8/Shell_logo.svg/1280px-Shell_logo.svg.png?utm_source=en.wikipedia.org&amp;utm_campaign=index&amp;utm_content=thumbnail"
+             onerror="this.style.display='none';document.getElementById('shellFallback').style.display='block';">
+        <!-- Fallback caso o logo da Shell não carregue: troque o src acima por sua própria imagem -->
+        <svg id="shellFallback" class="brand-logo shell" viewBox="0 0 100 100" style="display:none" aria-label="Shell">
+            <path d="M50 6C33 6 18 10 6 18c6 6 10 18 11 32 1 18-4 32-11 40 12 3 27 4 44 4s32-1 44-4c-7-8-12-22-11-40 1-14 5-26 11-32C82 10 67 6 50 6z" fill="#fbce07" stroke="#dd1d21" stroke-width="5" stroke-linejoin="round"/>
+        </svg>
+
+        <div class="brand-line"></div>
+
+        <div class="brand-title">GdM EVALUATIONS</div>
+    </div>
+</header>
+
+<main>
+    <nav class="options" aria-label="Avaliações">
+
+        <a class="option" href="G09.html">
+            <span class="option-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/>
+                    <path d="M14 3v5h5"/>
+                    <path d="m9 14 2 2 4-4"/>
+                </svg>
+            </span>
+            <span>
+                <h2 class="option-name">G09 Reviews</h2>
+                <p class="option-desc">Acompanhe e avalie os pacotes e disciplinas do G09.</p>
+            </span>
+        </a>
+
+        <a class="option cmms" href="CMMS.html">
+            <span class="option-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14.7 6.3a4 4 0 0 0 5 5L21 12.6a2.1 2.1 0 0 1-3 3l-1.3-1.3-7.4 7.4a2.1 2.1 0 0 1-3-3l7.4-7.4-1.3-1.3a2.1 2.1 0 0 1 3-3z" transform="translate(-2 -1) scale(.95)"/>
+                </svg>
+            </span>
+            <span>
+                <h2 class="option-name">CMMS JOBs Evaluation</h2>
+                <p class="option-desc">Avalie os jobs do CMMS e registre os resultados.</p>
+            </span>
+        </a>
+
+    </nav>
+</main>
+
+<script>
+    const canvas = document.getElementById("headerCanvas");
+    const ctx = canvas.getContext("2d");
+    let phase = 0;
+
+    function resize() {
+        const r = canvas.getBoundingClientRect();
+        const s = window.devicePixelRatio || 1;
+        canvas.width = Math.max(1, Math.round(r.width * s));
+        canvas.height = Math.max(1, Math.round(r.height * s));
+        ctx.setTransform(s, 0, 0, s, 0, 0);
+    }
+
+    const waves = [
+        { amp: 31, freq: 0.005,  ph: 0,   color: "rgba(37,99,235,1)" },
+        { amp: 25, freq: 0.0063, ph: 1.4, color: "rgba(96,165,250,.9)" },
+        { amp: 20, freq: 0.0042, ph: 2.6, color: "rgba(124,58,237,.85)" }
+    ];
+
+    function draw() {
+        const w = canvas.clientWidth, h = canvas.clientHeight;
+        ctx.clearRect(0, 0, w, h);
+        waves.forEach(wave => {
+            ctx.beginPath();
+            ctx.lineWidth = 2.5;
+            ctx.strokeStyle = wave.color;
+            for (let x = 0; x <= w; x++) {
+                const y = h / 2 + Math.sin(x * wave.freq + wave.ph + phase) * wave.amp;
+                x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+        });
+        phase += 0.012;
+        requestAnimationFrame(draw);
+    }
+
+    resize();
+    window.addEventListener("resize", resize);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        const frame = requestAnimationFrame;
+        window.requestAnimationFrame = () => {};
+        draw();
+        window.requestAnimationFrame = frame;
+    } else {
+        draw();
+    }
+</script>
+
+</body>
+</html>
