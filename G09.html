@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta
@@ -1592,6 +1592,12 @@
             border-color: #c4b5fd !important;
         }
 
+        .workflow-awaiting-pr {
+            color: #9a3412 !important;
+            background: #ffedd5 !important;
+            border-color: #fdba74 !important;
+        }
+
         .workflow-pr {
             color: #0e7490 !important;
             background: #cffafe !important;
@@ -1624,6 +1630,10 @@
 
         .package-status-line.workflow-client {
             background: #8b5cf6 !important;
+        }
+
+        .package-status-line.workflow-awaiting-pr {
+            background: #f97316 !important;
         }
 
         .package-status-line.workflow-pr {
@@ -2358,6 +2368,196 @@
             color: var(--muted);
             font-size: 9px;
             text-align: right;
+        }
+
+
+        /* =====================================================
+           GRÁFICO VERTICAL POR STATUS GERAL
+           ===================================================== */
+
+        .workflow-overview-summary {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, minmax(160px, 1fr));
+
+            gap: 13px;
+            margin-bottom: 19px;
+        }
+
+        .workflow-overview-chart-panel {
+            padding: 20px;
+
+            background: #ffffff;
+
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+
+            box-shadow: var(--shadow);
+        }
+
+        .workflow-overview-chart-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 18px;
+
+            margin-bottom: 17px;
+        }
+
+        .workflow-overview-chart-header h3 {
+            margin: 0 0 7px;
+
+            font-family: var(--font-bold);
+            font-size: 17px;
+            text-transform: uppercase;
+        }
+
+        .workflow-overview-chart-header p {
+            margin: 0;
+
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .workflow-overview-help {
+            padding: 10px 13px;
+
+            color: #1e3a8a;
+            background: #eff6ff;
+
+            border: 1px solid #bfdbfe;
+            border-radius: 9px;
+
+            font-size: 10px;
+            white-space: nowrap;
+        }
+
+        .workflow-overview-chart-scroll {
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
+        .workflow-overview-chart-container {
+            position: relative;
+
+            width: 100%;
+            min-width: 980px;
+            height: 520px;
+        }
+
+        .workflow-status-cards {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, minmax(190px, 1fr));
+
+            gap: 13px;
+            margin-top: 19px;
+        }
+
+        .workflow-status-card {
+            position: relative;
+
+            display: grid;
+            min-height: 125px;
+            padding: 16px;
+            overflow: hidden;
+
+            align-content: space-between;
+            gap: 12px;
+
+            background: #ffffff;
+
+            border: 1px solid var(--border);
+            border-top: 4px solid var(--workflow-color, var(--blue));
+            border-radius: 13px;
+
+            box-shadow:
+                0 4px 15px
+                rgba(15, 23, 42, 0.05);
+
+            cursor: pointer;
+
+            transition:
+                transform 0.24s ease,
+                box-shadow 0.24s ease;
+        }
+
+        .workflow-status-card:hover {
+            transform: translateY(-3px);
+
+            box-shadow:
+                0 12px 28px
+                rgba(15, 23, 42, 0.12);
+        }
+
+        .workflow-status-card-label {
+            font-family: var(--font-bold);
+            font-size: 11px;
+            line-height: 1.4;
+            text-transform: uppercase;
+        }
+
+        .workflow-status-card-value {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .workflow-status-card-value strong {
+            color: var(--workflow-color, var(--blue));
+
+            font-family: var(--font-bold);
+            font-size: 31px;
+            line-height: 1;
+        }
+
+        .workflow-status-card-value span {
+            color: var(--muted);
+            font-size: 10px;
+        }
+
+        .workflow-status-card-progress {
+            height: 6px;
+            overflow: hidden;
+
+            background: #e2e8f0;
+            border-radius: 999px;
+        }
+
+        .workflow-status-card-progress span {
+            display: block;
+            height: 100%;
+
+            background: var(--workflow-color, var(--blue));
+            border-radius: inherit;
+        }
+
+        @media (max-width: 1250px) {
+            .workflow-overview-summary,
+            .workflow-status-cards {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 720px) {
+            .workflow-overview-chart-header {
+                flex-direction: column;
+            }
+
+            .workflow-overview-help {
+                white-space: normal;
+            }
+
+            .workflow-overview-summary,
+            .workflow-status-cards {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* =====================================================
@@ -3194,6 +3394,7 @@
             #startupPage,
             #statusPage,
             #chartPage,
+            #workflowOverviewPage,
             #commercialPage,
             #logPage,
             .page-heading,
@@ -3311,9 +3512,73 @@
                 line-height: 1.1 !important;
             }
         }
+    
+        /* =====================================================
+           LANGUAGE SELECTOR / SELETOR DE IDIOMA
+           ===================================================== */
+
+        .language-control {
+            display: inline-flex;
+            min-height: 34px;
+            align-items: center;
+            gap: 7px;
+
+            padding: 4px 8px;
+
+            color: #e2e8f0;
+            background: rgba(255, 255, 255, 0.08);
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.15);
+
+            border-radius: 8px;
+        }
+
+        .language-control-icon {
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        .language-control select {
+            width: auto;
+            min-width: 145px;
+            min-height: 25px;
+
+            padding: 2px 25px 2px 7px;
+
+            color: #ffffff;
+            background: #172033;
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.22);
+
+            border-radius: 6px;
+
+            font-family: var(--font-bold);
+            font-size: 9px;
+        }
+
+        .language-control option {
+            color: #0f172a;
+            background: #ffffff;
+        }
+
+        @media (max-width: 720px) {
+            .language-control {
+                width: 100%;
+            }
+
+            .language-control select {
+                width: 100%;
+            }
+        }
+
     </style>
 </head>
 
+    <!-- G09_BILINGUAL_INTERFACE_VERSION_1 -->
 <body class="entry-active">
     <!-- ANIMAÇÃO -->
     <div
@@ -3418,6 +3683,31 @@
                 >
                     EXPORTAR EXCEL
                 </button>
+
+                <div
+                    class="language-control"
+                    data-i18n-skip
+                >
+                    <span
+                        class="language-control-icon"
+                        aria-hidden="true"
+                    >
+                        🌐
+                    </span>
+
+                    <select
+                        id="languageSelect"
+                        aria-label="Language / Idioma"
+                    >
+                        <option value="en">
+                            English
+                        </option>
+
+                        <option value="pt-BR">
+                            Português (Brasil)
+                        </option>
+                    </select>
+                </div>
 
                 <div
                     id="syncStatus"
@@ -3559,6 +3849,14 @@
                 type="button"
             >
                 Gráfico por disciplina
+            </button>
+
+            <button
+                class="nav-button"
+                data-page="workflowOverviewPage"
+                type="button"
+            >
+                Gráfico por status geral
             </button>
 
             <button
@@ -3787,6 +4085,63 @@
                         </div>
                     </div>
                 </div>
+            </section>
+
+
+            <!-- GRÁFICO POR STATUS GERAL -->
+            <section
+                id="workflowOverviewPage"
+                class="page"
+            >
+                <div class="page-heading">
+                    <div>
+                        <h2>
+                            Gráfico por status geral
+                        </h2>
+
+                        <p>
+                            Distribuição dos pacotes conforme o status
+                            geral registrado na coluna F.
+                        </p>
+                    </div>
+                </div>
+
+                <div
+                    id="workflowOverviewSummary"
+                    class="workflow-overview-summary"
+                ></div>
+
+                <div class="workflow-overview-chart-panel">
+                    <div class="workflow-overview-chart-header">
+                        <div>
+                            <h3>
+                                Pacotes por status
+                            </h3>
+
+                            <p>
+                                Cada barra vertical representa um status
+                                geral do fluxo.
+                            </p>
+                        </div>
+
+                        <div class="workflow-overview-help">
+                            Clique em uma barra para filtrar os pacotes.
+                        </div>
+                    </div>
+
+                    <div class="workflow-overview-chart-scroll">
+                        <div class="workflow-overview-chart-container">
+                            <canvas
+                                id="workflowOverviewChart"
+                            ></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    id="workflowStatusCards"
+                    class="workflow-status-cards"
+                ></div>
             </section>
 
             <!-- CONTROLE COMERCIAL -->
@@ -4254,31 +4609,35 @@
 
                     <select id="workflowModalStatus">
                         <option value="">
-                            Vazio
+                            Empty
                         </option>
 
-                        <option value="DOCUMENTO EM REVISÃO">
-                            DOCUMENTO EM REVISÃO
+                        <option value="Document under revision">
+                            Document under revision
                         </option>
 
-                        <option value="COMENTÁRIOS PARA O VENDOR">
-                            COMENTÁRIOS PARA O VENDOR
+                        <option value="Sent to vendor comments">
+                            Sent to vendor comments
                         </option>
 
-                        <option value="DOCUMENTO AVALIADO">
-                            DOCUMENTO AVALIADO
+                        <option value="Document evaluated by leads">
+                            Document evaluated by leads
                         </option>
 
-                        <option value="APROVAÇÃO DO CLIENTE">
-                            APROVAÇÃO DO CLIENTE
+                        <option value="Document to be evaluated by client">
+                            Document to be evaluated by client
                         </option>
 
-                        <option value="PR EMITIDA">
-                            PR EMITIDA
+                        <option value="PR to be issued">
+                            PR to be issued
                         </option>
 
-                        <option value="PO EMITIDA">
-                            PO EMITIDA
+                        <option value="PR Issued">
+                            PR Issued
+                        </option>
+
+                        <option value="PO Issued">
+                            PO Issued
                         </option>
                     </select>
                 </div>
@@ -4541,7 +4900,7 @@
             2500;
 
         const VENDOR_STATUS =
-            "COMENTÁRIOS PARA O VENDOR";
+            "Sent to vendor comments";
 
         const COLUMNS =
             Object.freeze({
@@ -4575,30 +4934,82 @@
         const WORKFLOW_STATUSES =
             Object.freeze([
                 "",
-                "DOCUMENTO EM REVISÃO",
-                "COMENTÁRIOS PARA O VENDOR",
-                "DOCUMENTO AVALIADO",
-                "APROVAÇÃO DO CLIENTE",
-                "PR EMITIDA",
-                "PO EMITIDA"
+                "Document under revision",
+                "Sent to vendor comments",
+                "Document evaluated by leads",
+                "Document to be evaluated by client",
+                "PR to be issued",
+                "PR Issued",
+                "PO Issued"
             ]);
 
         const WORKFLOW_ALIASES =
             Object.freeze({
+                /*
+                 * Compatibilidade com valores antigos em português.
+                 */
+                "DOCUMENTO EM REVISÃO":
+                    "Document under revision",
+
+                "COMENTÁRIOS PARA O VENDOR":
+                    "Sent to vendor comments",
+
+                "DOCUMENTO AVALIADO":
+                    "Document evaluated by leads",
+
+                "APROVAÇÃO DO CLIENTE":
+                    "Document to be evaluated by client",
+
+                "AGUARDANDO PR":
+                    "PR to be issued",
+
+                "PR EMITIDA":
+                    "PR Issued",
+
+                "PO EMITIDA":
+                    "PO Issued",
+
+                /*
+                 * Aliases antigos da planilha.
+                 */
                 "DOC EM REVISÃO":
-                    "DOCUMENTO EM REVISÃO",
+                    "Document under revision",
 
                 "DOC EM REVISÃO GRUPO":
-                    "DOCUMENTO EM REVISÃO",
+                    "Document under revision",
 
                 "AGUARDANDO QTY G09":
-                    "DOCUMENTO EM REVISÃO",
+                    "Document under revision",
 
                 "REVISAR BACKLOG":
-                    "DOCUMENTO EM REVISÃO",
+                    "Document under revision",
 
                 "QUANTIDADES DEFINIDAS":
-                    "DOCUMENTO AVALIADO"
+                    "Document evaluated by leads",
+
+                /*
+                 * Variações possíveis em inglês.
+                 */
+                "DOCUMENT UNDER REVIEW":
+                    "Document under revision",
+
+                "COMMENTS SENT TO VENDOR":
+                    "Sent to vendor comments",
+
+                "DOCUMENT EVALUATED":
+                    "Document evaluated by leads",
+
+                "CLIENT APPROVAL":
+                    "Document to be evaluated by client",
+
+                "AWAITING PR":
+                    "PR to be issued",
+
+                "PR EMITTED":
+                    "PR Issued",
+
+                "PO EMITTED":
+                    "PO Issued"
             });
 
         const ACTION_LABELS =
@@ -4631,6 +5042,7 @@
         const PAGE_ORDER = [
             "statusPage",
             "chartPage",
+            "workflowOverviewPage",
             "commercialPage",
             "evaluationPage",
             "logPage"
@@ -4704,6 +5116,11 @@
         let chartInstance = null;
         let chartStatusMode = "M";
         let chartAnimationGeneration = 0;
+
+        /*
+         * Gráfico do status geral — coluna F.
+         */
+        let workflowOverviewChartInstance = null;
 
         let directLinkHandled = false;
 
@@ -4847,6 +5264,15 @@
 
         const chartPackageList =
             byId("chartPackageList");
+
+        const workflowOverviewSummary =
+            byId("workflowOverviewSummary");
+
+        const workflowOverviewChart =
+            byId("workflowOverviewChart");
+
+        const workflowStatusCards =
+            byId("workflowStatusCards");
 
         const commercialSummary =
             byId("commercialSummary");
@@ -9459,23 +9885,26 @@
         }
 
         function workflowClass(status) {
-            switch (status) {
-                case "DOCUMENTO EM REVISÃO":
+            switch (normalizeWorkflow(status)) {
+                case "Document under revision":
                     return "workflow-review";
 
-                case "COMENTÁRIOS PARA O VENDOR":
+                case "Sent to vendor comments":
                     return "workflow-vendor";
 
-                case "DOCUMENTO AVALIADO":
+                case "Document evaluated by leads":
                     return "workflow-evaluated";
 
-                case "APROVAÇÃO DO CLIENTE":
+                case "Document to be evaluated by client":
                     return "workflow-client";
 
-                case "PR EMITIDA":
+                case "PR to be issued":
+                    return "workflow-awaiting-pr";
+
+                case "PR Issued":
                     return "workflow-pr";
 
-                case "PO EMITIDA":
+                case "PO Issued":
                     return "workflow-po";
 
                 default:
@@ -10279,6 +10708,572 @@
         /* =====================================================
            CONTROLE COMERCIAL
            ===================================================== */
+
+
+        /* =====================================================
+           GRÁFICO VERTICAL POR STATUS GERAL
+           ===================================================== */
+
+        function workflowOverviewColor(status) {
+            switch (normalizeWorkflow(status)) {
+                case "Document under revision":
+                    return "#f59e0b";
+
+                case "Sent to vendor comments":
+                    return "#ef4444";
+
+                case "Document evaluated by leads":
+                    return "#2563eb";
+
+                case "Document to be evaluated by client":
+                    return "#8b5cf6";
+
+                case "PR to be issued":
+                    return "#f97316";
+
+                case "PR Issued":
+                    return "#06b6d4";
+
+                case "PO Issued":
+                    return "#10b981";
+
+                default:
+                    return "#94a3b8";
+            }
+        }
+
+        function getWorkflowOverviewData() {
+            return WORKFLOW_STATUSES
+                .filter(Boolean)
+                .map(status => ({
+                    status,
+
+                    total:
+                        packages.filter(
+                            packageData =>
+                                packageData.workflowStatus ===
+                                status
+                        ).length,
+
+                    color:
+                        workflowOverviewColor(
+                            status
+                        )
+                }));
+        }
+
+        function openWorkflowStatusFilter(status) {
+            searchInput.value =
+                "";
+
+            workflowFilter.value =
+                status;
+
+            disciplineFilter.value =
+                "";
+
+            disciplineStatusFilter.value =
+                "";
+
+            profileFilterNotice
+                .classList
+                .add("hidden");
+
+            openPage(
+                "statusPage",
+                {
+                    scrollTop:
+                        true
+                }
+            );
+
+            renderStatus();
+        }
+
+        function renderWorkflowOverviewSummary(data) {
+            const classified =
+                data.reduce(
+                    (
+                        total,
+                        item
+                    ) =>
+                        total +
+                        item.total,
+                    0
+                );
+
+            const withoutStatus =
+                packages.filter(
+                    packageData =>
+                        !packageData.workflowStatus
+                ).length;
+
+            const largest =
+                [...data].sort(
+                    (
+                        first,
+                        second
+                    ) =>
+                        second.total -
+                        first.total
+                )[0];
+
+            workflowOverviewSummary.innerHTML = `
+                <div class="stat-card">
+                    <span>Total de pacotes</span>
+
+                    <strong>
+                        ${packages.length}
+                    </strong>
+                </div>
+
+                <div class="stat-card">
+                    <span>Com status geral</span>
+
+                    <strong>
+                        ${classified}
+                    </strong>
+                </div>
+
+                <div class="stat-card">
+                    <span>Sem status geral</span>
+
+                    <strong>
+                        ${withoutStatus}
+                    </strong>
+                </div>
+
+                <div class="stat-card">
+                    <span>Maior status</span>
+
+                    <strong>
+                        ${largest?.total || 0}
+                    </strong>
+
+                    <div
+                        style="
+                            margin-top: 7px;
+                            color: var(--muted);
+                            font-size: 9px;
+                        "
+                    >
+                        ${escapeHtml(
+                            largest?.status ||
+                            "Sem dados"
+                        )}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderWorkflowStatusCards(data) {
+            workflowStatusCards.innerHTML =
+                data.map(item => {
+                    const percentage =
+                        packages.length
+                            ? Math.round(
+                                (
+                                    item.total /
+                                    packages.length
+                                ) *
+                                100
+                            )
+                            : 0;
+
+                    return `
+                        <article
+                            class="workflow-status-card"
+                            data-workflow-filter-status="${escapeHtml(item.status)}"
+                            style="--workflow-color: ${escapeHtml(item.color)}"
+                            role="button"
+                            tabindex="0"
+                            title="Clique para filtrar este status"
+                        >
+                            <div class="workflow-status-card-label">
+                                ${escapeHtml(item.status)}
+                            </div>
+
+                            <div class="workflow-status-card-value">
+                                <strong>
+                                    ${item.total}
+                                </strong>
+
+                                <span>
+                                    ${percentage}% do total
+                                </span>
+                            </div>
+
+                            <div class="workflow-status-card-progress">
+                                <span
+                                    style="width: ${percentage}%"
+                                ></span>
+                            </div>
+                        </article>
+                    `;
+                }).join("");
+        }
+
+        const workflowOverviewValuesPlugin = {
+            id:
+                "workflowOverviewValues",
+
+            afterDatasetsDraw(chart) {
+                const context =
+                    chart.ctx;
+
+                const metadata =
+                    chart.getDatasetMeta(0);
+
+                context.save();
+
+                context.font =
+                    "800 13px Arial";
+
+                context.textAlign =
+                    "center";
+
+                context.textBaseline =
+                    "bottom";
+
+                metadata.data.forEach(
+                    (
+                        bar,
+                        index
+                    ) => {
+                        const value =
+                            chart.data
+                                .datasets[0]
+                                .data[index];
+
+                        context.fillStyle =
+                            "#0f172a";
+
+                        context.fillText(
+                            String(value),
+                            bar.x,
+                            bar.y -
+                            8
+                        );
+                    }
+                );
+
+                context.restore();
+            }
+        };
+
+        function renderWorkflowOverview() {
+            if (
+                activePage !==
+                    "workflowOverviewPage" ||
+                !workflowOverviewChart
+            ) {
+                return;
+            }
+
+            const data =
+                getWorkflowOverviewData();
+
+            renderWorkflowOverviewSummary(
+                data
+            );
+
+            renderWorkflowStatusCards(
+                data
+            );
+
+            if (
+                workflowOverviewChartInstance
+            ) {
+                workflowOverviewChartInstance
+                    .destroy();
+
+                workflowOverviewChartInstance =
+                    null;
+            }
+
+            if (
+                typeof Chart ===
+                "undefined"
+            ) {
+                return;
+            }
+
+            workflowOverviewChartInstance =
+                new Chart(
+                    workflowOverviewChart,
+                    {
+                        type:
+                            "bar",
+
+                        data: {
+                            labels:
+                                data.map(
+                                    item =>
+                                        item.status
+                                ),
+
+                            datasets: [
+                                {
+                                    label:
+                                        "Pacotes",
+
+                                    data:
+                                        data.map(
+                                            item =>
+                                                item.total
+                                        ),
+
+                                    backgroundColor:
+                                        data.map(
+                                            item =>
+                                                item.color +
+                                                "D9"
+                                        ),
+
+                                    borderColor:
+                                        data.map(
+                                            item =>
+                                                item.color
+                                        ),
+
+                                    borderWidth:
+                                        1,
+
+                                    borderRadius:
+                                        8,
+
+                                    borderSkipped:
+                                        false,
+
+                                    maxBarThickness:
+                                        90
+                                }
+                            ]
+                        },
+
+                        plugins: [
+                            workflowOverviewValuesPlugin
+                        ],
+
+                        options: {
+                            responsive:
+                                true,
+
+                            maintainAspectRatio:
+                                false,
+
+                            layout: {
+                                padding: {
+                                    top:
+                                        30,
+
+                                    right:
+                                        10,
+
+                                    left:
+                                        10
+                                }
+                            },
+
+                            interaction: {
+                                mode:
+                                    "nearest",
+
+                                intersect:
+                                    true
+                            },
+
+                            onHover(
+                                event,
+                                elements
+                            ) {
+                                const target =
+                                    event?.native
+                                        ?.target;
+
+                                if (target) {
+                                    target.style.cursor =
+                                        elements.length
+                                            ? "pointer"
+                                            : "default";
+                                }
+                            },
+
+                            onClick(
+                                event,
+                                elements
+                            ) {
+                                if (
+                                    !elements.length
+                                ) {
+                                    return;
+                                }
+
+                                const selected =
+                                    data[
+                                        elements[0]
+                                            .index
+                                    ];
+
+                                if (selected) {
+                                    openWorkflowStatusFilter(
+                                        selected.status
+                                    );
+                                }
+                            },
+
+                            scales: {
+                                y: {
+                                    beginAtZero:
+                                        true,
+
+                                    ticks: {
+                                        precision:
+                                            0,
+
+                                        stepSize:
+                                            1
+                                    },
+
+                                    title: {
+                                        display:
+                                            true,
+
+                                        text:
+                                            "Quantidade de pacotes"
+                                    }
+                                },
+
+                                x: {
+                                    grid: {
+                                        display:
+                                            false
+                                    },
+
+                                    ticks: {
+                                        autoSkip:
+                                            false,
+
+                                        maxRotation:
+                                            28,
+
+                                        minRotation:
+                                            0,
+
+                                        font: {
+                                            size:
+                                                10,
+
+                                            weight:
+                                                "bold"
+                                        }
+                                    }
+                                }
+                            },
+
+                            plugins: {
+                                legend: {
+                                    display:
+                                        false
+                                },
+
+                                tooltip: {
+                                    callbacks: {
+                                        title(items) {
+                                            return (
+                                                items[0]
+                                                    ?.label ||
+                                                ""
+                                            );
+                                        },
+
+                                        label(context) {
+                                            const total =
+                                                Number(
+                                                    context.raw ||
+                                                    0
+                                                );
+
+                                            const percentage =
+                                                packages.length
+                                                    ? Math.round(
+                                                        (
+                                                            total /
+                                                            packages.length
+                                                        ) *
+                                                        100
+                                                    )
+                                                    : 0;
+
+                                            return (
+                                                total +
+                                                " pacote(s) — " +
+                                                percentage +
+                                                "% do total"
+                                            );
+                                        },
+
+                                        afterBody() {
+                                            return (
+                                                "Clique para abrir os pacotes."
+                                            );
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                );
+        }
+
+        workflowStatusCards.addEventListener(
+            "click",
+            event => {
+                const card =
+                    event.target.closest(
+                        "[data-workflow-filter-status]"
+                    );
+
+                if (!card) {
+                    return;
+                }
+
+                openWorkflowStatusFilter(
+                    card.dataset
+                        .workflowFilterStatus
+                );
+            }
+        );
+
+        workflowStatusCards.addEventListener(
+            "keydown",
+            event => {
+                if (
+                    event.key !==
+                        "Enter" &&
+                    event.key !==
+                        " "
+                ) {
+                    return;
+                }
+
+                const card =
+                    event.target.closest(
+                        "[data-workflow-filter-status]"
+                    );
+
+                if (!card) {
+                    return;
+                }
+
+                event.preventDefault();
+
+                openWorkflowStatusFilter(
+                    card.dataset
+                        .workflowFilterStatus
+                );
+            }
+        );
 
         function getFilteredCommercialPackages() {
             const search =
@@ -12128,6 +13123,18 @@
 
             if (
                 pageId ===
+                "workflowOverviewPage"
+            ) {
+                window.setTimeout(
+                    () => {
+                        renderWorkflowOverview();
+                    },
+                    100
+                );
+            }
+
+            if (
+                pageId ===
                 "commercialPage"
             ) {
                 renderCommercialControl();
@@ -12176,6 +13183,13 @@
                 renderChartPackageList(
                     false
                 );
+            }
+
+            if (
+                activePage ===
+                "workflowOverviewPage"
+            ) {
+                renderWorkflowOverview();
             }
         }
 
@@ -12918,6 +13932,799 @@
          * O controle começa assim que o HTML é executado.
          * Qualquer atividade reinicia o prazo de três horas.
          */
+
+        /* =====================================================
+           BILINGUAL INTERFACE — ENGLISH / PT-BR
+           G09_BILINGUAL_INTERFACE_VERSION_1
+           ===================================================== */
+
+        const LANGUAGE_STORAGE_KEY =
+            "g09OverviewLanguage";
+
+        const I18N_TRANSLATIONS =
+            [{"en":"Document under revision","pt":"DOCUMENTO EM REVISÃO"},{"en":"Sent to vendor comments","pt":"COMENTÁRIOS PARA O VENDOR"},{"en":"Document evaluated by leads","pt":"DOCUMENTO AVALIADO"},{"en":"Document to be evaluated by client","pt":"APROVAÇÃO DO CLIENTE"},{"en":"PR to be issued","pt":"AGUARDANDO PR"},{"en":"PR Issued","pt":"PR EMITIDA"},{"en":"PO Issued","pt":"PO EMITIDA"},{"en":"Preparing environment","pt":"Preparando ambiente"},{"en":"The snapshot saved in Firebase will be restored automatically.","pt":"O snapshot salvo no Firebase será restaurado automaticamente."},{"en":"Loading data","pt":"Carregando dados"},{"en":"Starting application...","pt":"Iniciando aplicação..."},{"en":"The snapshot could not be accessed","pt":"Não foi possível acessar o snapshot"},{"en":"Try again","pt":"Tentar novamente"},{"en":"Set project spreadsheet","pt":"Definir planilha do projeto"},{"en":"Select an Excel file containing the G09 Evaluation sheet.","pt":"Selecione um Excel contendo a aba G09 Evaluation."},{"en":"Select Excel file","pt":"Selecionar Excel"},{"en":"MY PROFILE","pt":"MEU PERFIL"},{"en":"CHANGE SPREADSHEET","pt":"TROCAR PLANILHA"},{"en":"EXPORT EXCEL","pt":"EXPORTAR EXCEL"},{"en":"Package Status","pt":"Status dos pacotes"},{"en":"Chart by Discipline","pt":"Gráfico por disciplina"},{"en":"Chart by Overall Status","pt":"Gráfico por status geral"},{"en":"Charts by Status","pt":"Gráficos por status"},{"en":"PR/PO and Email Control","pt":"Controle PR/PO e E-mails"},{"en":"Packages Under Evaluation","pt":"Pacotes em Avaliação"},{"en":"Change Log","pt":"LOG de modificações"},{"en":"Double-click the overall status or a discipline to edit.","pt":"Duplo clique no status geral ou em uma disciplina para editar."},{"en":"Search","pt":"Pesquisar"},{"en":"Package, document, description, PR or PO...","pt":"Pacote, documento, descrição, PR ou PO..."},{"en":"Overall status","pt":"Status geral"},{"en":"Discipline","pt":"Disciplina"},{"en":"Discipline status","pt":"Status da disciplina"},{"en":"All","pt":"Todos"},{"en":"All disciplines","pt":"Todas"},{"en":"Empty","pt":"Vazio"},{"en":"EMPTY","pt":"VAZIO"},{"en":"NO STATUS","pt":"SEM STATUS"},{"en":"Automatic profile filter:","pt":"Filtro automático do perfil:"},{"en":"No packages found","pt":"Nenhum pacote encontrado"},{"en":"There are no packages matching the selected filters.","pt":"Não existem pacotes correspondentes aos filtros."},{"en":"Total packages","pt":"Total de pacotes"},{"en":"Displayed packages","pt":"Pacotes exibidos"},{"en":"Under evaluation","pt":"Em avaliação"},{"en":"All OK","pt":"Todos OK"},{"en":"With comment","pt":"Com observação"},{"en":"With overall status","pt":"Com status geral"},{"en":"Without overall status","pt":"Sem status geral"},{"en":"Largest status","pt":"Maior status"},{"en":"Configured statuses","pt":"Status configurados"},{"en":"Statuses with packages","pt":"Status com pacotes"},{"en":"Largest group","pt":"Maior concentração"},{"en":"Package","pt":"Pacote"},{"en":"Packages","pt":"Pacotes"},{"en":"Document","pt":"Documento"},{"en":"No description","pt":"Sem descrição"},{"en":"Overall status — Column F","pt":"Status geral — Coluna F"},{"en":"Disciplines","pt":"Disciplinas"},{"en":"Double-click to edit","pt":"Duplo clique para editar"},{"en":"Overall comment","pt":"Observação geral"},{"en":"Column G","pt":"Coluna G"},{"en":"Enter a comment...","pt":"Digite uma observação..."},{"en":"Automatic saving to Firebase","pt":"Salvamento automático no Firebase"},{"en":"Columns U and V","pt":"Colunas U e V"},{"en":"Enter PR","pt":"Insira a PR"},{"en":"Enter PO","pt":"Insira a PO"},{"en":"Firebase + in-memory Excel","pt":"Firebase + Excel em memória"},{"en":"Save PR/PO","pt":"Salvar PR/PO"},{"en":"Copy package","pt":"Copiar pacote"},{"en":"Copy description","pt":"Copiar descrição"},{"en":"Copy document","pt":"Copiar documento"},{"en":"Latest email sent to vendor","pt":"Último e-mail ao vendor"},{"en":"Change date","pt":"Alterar data"},{"en":"Edit discipline","pt":"Editar disciplina"},{"en":"Discipline-specific comment","pt":"Comentário específico"},{"en":"Enter the discipline comment...","pt":"Digite o comentário da disciplina..."},{"en":"Discipline comment","pt":"Comentário da disciplina"},{"en":"No discipline-specific comment","pt":"Sem comentário específico"},{"en":"Pending disciplines","pt":"Disciplinas pendentes"},{"en":"M — Missing","pt":"M — Missing"},{"en":"OK — Okay","pt":"OK — Okay"},{"en":"Missing by discipline","pt":"Missing por disciplina"},{"en":"OK by discipline","pt":"OK por disciplina"},{"en":"Select Missing or OK and click a bar to list the packages.","pt":"Selecione Missing ou OK e clique em uma barra para listar os pacotes."},{"en":"View","pt":"Visualização"},{"en":"Click a package to open it","pt":"Clique em um pacote para abri-lo"},{"en":"Click to open and edit this discipline","pt":"Clique para abrir e editar esta disciplina"},{"en":"Click to open the package","pt":"Clique para abrir o pacote"},{"en":"Open package on the main page","pt":"Abrir pacote na página principal"},{"en":"Packages by status","pt":"Pacotes por status"},{"en":"Each vertical bar represents an overall workflow status.","pt":"Cada barra vertical representa um status geral do fluxo."},{"en":"Click a bar to filter the packages.","pt":"Clique em uma barra para filtrar os pacotes."},{"en":"Package distribution according to the overall status recorded in column F.","pt":"Distribuição dos pacotes conforme o status geral registrado na coluna F."},{"en":"Number of packages","pt":"Quantidade de pacotes"},{"en":"Click to filter this status","pt":"Clique para filtrar este status"},{"en":"Click to open the packages.","pt":"Clique para abrir os pacotes."},{"en":"The PR is linked to column U, the PO to column V, and the latest email date is stored in Firebase.","pt":"A PR é vinculada à coluna U, a PO à coluna V e a data do último e-mail fica no Firebase."},{"en":"Search package","pt":"Pesquisar pacote"},{"en":"Latest email date","pt":"Data do último e-mail"},{"en":"No date","pt":"Sem data"},{"en":"Up to 7 days","pt":"Até 7 dias"},{"en":"From 8 to 14 days","pt":"De 8 a 14 dias"},{"en":"More than 14 days","pt":"Mais de 14 dias"},{"en":"Description","pt":"Descrição"},{"en":"Latest email","pt":"Último e-mail"},{"en":"Age","pt":"Tempo"},{"en":"Action","pt":"Ação"},{"en":"Sent to vendor comments","pt":"COMENTÁRIOS PARA O VENDOR"},{"en":"Vendor without date","pt":"Vendor sem data"},{"en":"Packages with PR","pt":"Pacotes com PR"},{"en":"Packages with PO","pt":"Pacotes com PO"},{"en":"Packages with at least one pending discipline. The ONSH discipline is excluded.","pt":"Pacotes com pelo menos uma disciplina pendente. A disciplina ONSH é excluída."},{"en":"Save PDF","pt":"Salvar PDF"},{"en":"No packages under evaluation","pt":"Nenhum pacote em avaliação"},{"en":"No overall comment","pt":"Sem observação geral"},{"en":"ONSH excluded","pt":"ONSH excluída"},{"en":"DATE:","pt":"DATA:"},{"en":"WEEK:","pt":"SEMANA:"},{"en":"History of changes made by users.","pt":"Histórico das alterações realizadas pelos usuários."},{"en":"Start date","pt":"Data inicial"},{"en":"End date","pt":"Data final"},{"en":"Package, document or description...","pt":"Pacote, documento ou descrição..."},{"en":"User","pt":"Usuário"},{"en":"All users","pt":"Todos os usuários"},{"en":"Field","pt":"Campo"},{"en":"Previous value","pt":"Anterior"},{"en":"New value","pt":"Novo valor"},{"en":"Clear","pt":"Limpar"},{"en":"No changes found","pt":"Nenhuma modificação encontrada"},{"en":"Discipline status","pt":"Status de disciplina"},{"en":"Overall comment","pt":"Observação geral"},{"en":"Latest email date","pt":"Data do último e-mail"},{"en":"PR number","pt":"Número da PR"},{"en":"PO number","pt":"Número da PO"},{"en":"Spreadsheet","pt":"Planilha"},{"en":"Package overall status","pt":"Status geral do pacote"},{"en":"Status","pt":"Status"},{"en":"When selecting Sent to vendor comments, the latest email date will be requested.","pt":"Ao selecionar COMENTÁRIOS PARA O VENDOR, será solicitada a data do último e-mail enviado."},{"en":"Enter the date of the latest email sent to the vendor. The date will be saved in Firebase.","pt":"Informe a data do último e-mail enviado ao vendor. A data será salva no Firebase."},{"en":"Cancel","pt":"Cancelar"},{"en":"Continue","pt":"Continuar"},{"en":"Save to Firebase","pt":"Salvar no Firebase"},{"en":"Save","pt":"Salvar"},{"en":"First access","pt":"Primeiro acesso"},{"en":"My profile","pt":"Meu perfil"},{"en":"Identification used in the change log.","pt":"Identificação usada no LOG de alterações."},{"en":"For disciplines other than ONSH, the main page will open showing the Missing packages for the profile discipline.","pt":"Para disciplinas diferentes de ONSH, a página principal abrirá mostrando os pacotes Missing da disciplina do perfil."},{"en":"Name","pt":"Nome"},{"en":"Enter your full name","pt":"Digite seu nome completo"},{"en":"Select...","pt":"Selecione..."},{"en":"Save and continue","pt":"Salvar e continuar"},{"en":"Completed","pt":"Concluído"},{"en":"Error","pt":"Erro"},{"en":"Warning","pt":"Atenção"},{"en":"Synchronization","pt":"Sincronização"},{"en":"Saving...","pt":"Salvando..."},{"en":"Profile saved successfully.","pt":"Perfil salvo com sucesso."},{"en":"Discipline saved.","pt":"Disciplina salva."},{"en":"Overall status saved.","pt":"Status geral salvo."},{"en":"Vendor status and date saved.","pt":"Status e data do vendor salvos."},{"en":"Comment saved.","pt":"Observação salva."},{"en":"Commercial data saved.","pt":"Dados comerciais salvos."},{"en":"No changes were identified.","pt":"Nenhuma alteração foi identificada."},{"en":"Package not found.","pt":"Pacote não encontrado."},{"en":"Information copied.","pt":"Informação copiada."},{"en":"The information could not be copied.","pt":"Não foi possível copiar."},{"en":"Enter the name and discipline.","pt":"Preencha o nome e a disciplina."},{"en":"Enter the latest email date.","pt":"Informe a data do último e-mail."},{"en":"Only Felippe Braga can change the spreadsheet.","pt":"Somente Felippe Braga pode trocar a planilha."},{"en":"Today","pt":"Hoje"},{"en":"No data","pt":"Sem dados"},{"en":"Not provided","pt":"Não informada"},{"en":"Date unavailable","pt":"Data indisponível"},{"en":"Unidentified user","pt":"Usuário não identificado"}];
+
+        let currentLanguage =
+            localStorage.getItem(
+                LANGUAGE_STORAGE_KEY
+            ) === "pt-BR"
+                ? "pt-BR"
+                : "en";
+
+        let languageObserver =
+            null;
+
+        let applyingLanguage =
+            false;
+
+        function normalizeTranslationText(value) {
+            return String(value ?? "")
+                .replace(/\s+/g, " ")
+                .trim();
+        }
+
+        const translationsByEnglish =
+            new Map();
+
+        const translationsByPortuguese =
+            new Map();
+
+        I18N_TRANSLATIONS.forEach(item => {
+            translationsByEnglish.set(
+                normalizeTranslationText(
+                    item.en
+                ),
+                item
+            );
+
+            translationsByPortuguese.set(
+                normalizeTranslationText(
+                    item.pt
+                ),
+                item
+            );
+        });
+
+        function translateDynamicText(
+            value,
+            language
+        ) {
+            let result =
+                value;
+
+            if (language === "pt-BR") {
+                const rules = [
+                    [
+                        /^Package (.+)$/i,
+                        "Pacote $1"
+                    ],
+                    [
+                        /^Document:\s*(.+)$/i,
+                        "Documento: $1"
+                    ],
+                    [
+                        /^Document\s+(.+)$/i,
+                        "Documento $1"
+                    ],
+                    [
+                        /^Packages Missing — (.+)$/i,
+                        "Pacotes Missing — $1"
+                    ],
+                    [
+                        /^Packages OK — (.+)$/i,
+                        "Pacotes OK — $1"
+                    ],
+                    [
+                        /^(\d+) package\(s\) found$/i,
+                        "$1 pacote(s) encontrado(s)"
+                    ],
+                    [
+                        /^(\d+) package\(s\) loaded\.$/i,
+                        "$1 pacote(s) carregado(s)."
+                    ],
+                    [
+                        /^(\d+) package\(s\) restored from Firebase\.$/i,
+                        "$1 pacote(s) restaurado(s) do Firebase."
+                    ],
+                    [
+                        /^(\d+) record\(s\) found$/i,
+                        "$1 registro(s) encontrado(s)"
+                    ],
+                    [
+                        /^(\d+) day\(s\)$/i,
+                        "$1 dia(s)"
+                    ],
+                    [
+                        /^(\d+) days$/i,
+                        "$1 dias"
+                    ],
+                    [
+                        /^Week:\s*(.+)$/i,
+                        "Semana: $1"
+                    ],
+                    [
+                        /^Date:\s*(.+)$/i,
+                        "Data: $1"
+                    ],
+                    [
+                        /^Page\s+(.+)$/i,
+                        "Página $1"
+                    ],
+                    [
+                        /^(.+)% of the total$/i,
+                        "$1% do total"
+                    ],
+                    [
+                        /^Package (.+) updated by another user\.$/i,
+                        "Pacote $1 atualizado por outro usuário."
+                    ]
+                ];
+
+                rules.some(rule => {
+                    if (!rule[0].test(result)) {
+                        return false;
+                    }
+
+                    result =
+                        result.replace(
+                            rule[0],
+                            rule[1]
+                        );
+
+                    return true;
+                });
+
+                return result;
+            }
+
+            const rules = [
+                [
+                    /^Pacote (.+)$/i,
+                    "Package $1"
+                ],
+                [
+                    /^Documento:\s*(.+)$/i,
+                    "Document: $1"
+                ],
+                [
+                    /^Documento\s+(.+)$/i,
+                    "Document $1"
+                ],
+                [
+                    /^Pacotes Missing — (.+)$/i,
+                    "Packages Missing — $1"
+                ],
+                [
+                    /^Pacotes OK — (.+)$/i,
+                    "Packages OK — $1"
+                ],
+                [
+                    /^(\d+) pacote\(s\) encontrado\(s\)$/i,
+                    "$1 package(s) found"
+                ],
+                [
+                    /^(\d+) pacote\(s\) carregado\(s\)\.$/i,
+                    "$1 package(s) loaded."
+                ],
+                [
+                    /^(\d+) pacote\(s\) restaurado\(s\) do Firebase\.$/i,
+                    "$1 package(s) restored from Firebase."
+                ],
+                [
+                    /^(\d+) registro\(s\) encontrado\(s\)$/i,
+                    "$1 record(s) found"
+                ],
+                [
+                    /^(\d+) dia\(s\)$/i,
+                    "$1 day(s)"
+                ],
+                [
+                    /^(\d+) dias$/i,
+                    "$1 days"
+                ],
+                [
+                    /^Semana:\s*(.+)$/i,
+                    "Week: $1"
+                ],
+                [
+                    /^Data:\s*(.+)$/i,
+                    "Date: $1"
+                ],
+                [
+                    /^Página\s+(.+)$/i,
+                    "Page $1"
+                ],
+                [
+                    /^(.+)% do total$/i,
+                    "$1% of the total"
+                ],
+                [
+                    /^Pacote (.+) atualizado por outro usuário\.$/i,
+                    "Package $1 updated by another user."
+                ]
+            ];
+
+            rules.some(rule => {
+                if (!rule[0].test(result)) {
+                    return false;
+                }
+
+                result =
+                    result.replace(
+                        rule[0],
+                        rule[1]
+                    );
+
+                return true;
+            });
+
+            return result;
+        }
+
+        function translateUiText(
+            value,
+            language = currentLanguage
+        ) {
+            const original =
+                String(value ?? "");
+
+            const normalized =
+                normalizeTranslationText(
+                    original
+                );
+
+            if (!normalized) {
+                return original;
+            }
+
+            const item =
+                translationsByEnglish.get(
+                    normalized
+                ) ||
+                translationsByPortuguese.get(
+                    normalized
+                );
+
+            if (item) {
+                return language === "pt-BR"
+                    ? item.pt
+                    : item.en;
+            }
+
+            return translateDynamicText(
+                original,
+                language
+            );
+        }
+
+        function shouldSkipTranslation(node) {
+            const parent =
+                node.nodeType ===
+                    Node.TEXT_NODE
+                    ? node.parentElement
+                    : node;
+
+            if (!parent) {
+                return true;
+            }
+
+            if (
+                parent.closest(
+                    "script, style, noscript, textarea, [data-i18n-skip]"
+                )
+            ) {
+                return true;
+            }
+
+            return false;
+        }
+
+        function translateTextNode(node) {
+            if (
+                !node ||
+                node.nodeType !==
+                    Node.TEXT_NODE ||
+                shouldSkipTranslation(node)
+            ) {
+                return;
+            }
+
+            const original =
+                node.nodeValue;
+
+            if (
+                !original ||
+                !original.trim()
+            ) {
+                return;
+            }
+
+            const leading =
+                original.match(/^\s*/)?.[0] ||
+                "";
+
+            const trailing =
+                original.match(/\s*$/)?.[0] ||
+                "";
+
+            const core =
+                original.slice(
+                    leading.length,
+                    original.length -
+                    trailing.length
+                );
+
+            const translated =
+                translateUiText(
+                    core
+                );
+
+            if (
+                translated !==
+                core
+            ) {
+                node.nodeValue =
+                    leading +
+                    translated +
+                    trailing;
+            }
+        }
+
+        function translateElementAttributes(element) {
+            if (
+                !element ||
+                element.nodeType !==
+                    Node.ELEMENT_NODE ||
+                element.closest(
+                    "[data-i18n-skip]"
+                )
+            ) {
+                return;
+            }
+
+            [
+                "placeholder",
+                "title",
+                "aria-label"
+            ].forEach(attribute => {
+                if (
+                    !element.hasAttribute(
+                        attribute
+                    )
+                ) {
+                    return;
+                }
+
+                const value =
+                    element.getAttribute(
+                        attribute
+                    );
+
+                const translated =
+                    translateUiText(
+                        value
+                    );
+
+                if (
+                    translated !==
+                    value
+                ) {
+                    element.setAttribute(
+                        attribute,
+                        translated
+                    );
+                }
+            });
+        }
+
+        function applyLanguageToElement(root) {
+            if (!root) {
+                return;
+            }
+
+            if (
+                root.nodeType ===
+                Node.TEXT_NODE
+            ) {
+                translateTextNode(
+                    root
+                );
+
+                return;
+            }
+
+            if (
+                root.nodeType !==
+                Node.ELEMENT_NODE &&
+                root.nodeType !==
+                Node.DOCUMENT_NODE
+            ) {
+                return;
+            }
+
+            if (
+                root.nodeType ===
+                    Node.ELEMENT_NODE &&
+                root.matches(
+                    "[data-i18n-skip]"
+                )
+            ) {
+                return;
+            }
+
+            if (
+                root.nodeType ===
+                Node.ELEMENT_NODE
+            ) {
+                translateElementAttributes(
+                    root
+                );
+            }
+
+            const textWalker =
+                document.createTreeWalker(
+                    root,
+                    NodeFilter.SHOW_TEXT
+                );
+
+            let textNode =
+                textWalker.nextNode();
+
+            while (textNode) {
+                translateTextNode(
+                    textNode
+                );
+
+                textNode =
+                    textWalker.nextNode();
+            }
+
+            const elements =
+                root.querySelectorAll
+                    ? root.querySelectorAll(
+                        "[placeholder], [title], [aria-label]"
+                    )
+                    : [];
+
+            elements.forEach(
+                translateElementAttributes
+            );
+        }
+
+        function translateChartResult(value) {
+            if (Array.isArray(value)) {
+                return value.map(
+                    translateChartResult
+                );
+            }
+
+            if (
+                typeof value ===
+                "string"
+            ) {
+                return translateUiText(
+                    value
+                );
+            }
+
+            return value;
+        }
+
+        function wrapChartTooltipCallbacks(chart) {
+            try {
+                const callbacks =
+                    chart?.options
+                        ?.plugins
+                        ?.tooltip
+                        ?.callbacks;
+
+                if (!callbacks) {
+                    return;
+                }
+
+                Object.keys(
+                    callbacks
+                ).forEach(key => {
+                    const original =
+                        callbacks[key];
+
+                    if (
+                        typeof original !==
+                            "function" ||
+                        original
+                            .__g09I18nWrapped
+                    ) {
+                        return;
+                    }
+
+                    const wrapped =
+                        function(...args) {
+                            return translateChartResult(
+                                original.apply(
+                                    this,
+                                    args
+                                )
+                            );
+                        };
+
+                    wrapped.__g09I18nWrapped =
+                        true;
+
+                    callbacks[key] =
+                        wrapped;
+                });
+            } catch (error) {
+                console.warn(
+                    "Chart tooltip translation failed:",
+                    error
+                );
+            }
+        }
+
+        function localizeCharts() {
+            if (
+                typeof Chart ===
+                "undefined"
+            ) {
+                return;
+            }
+
+            const instances =
+                Object.values(
+                    Chart.instances ||
+                    {}
+                );
+
+            instances.forEach(chart => {
+                try {
+                    if (
+                        Array.isArray(
+                            chart.data?.labels
+                        )
+                    ) {
+                        chart.data.labels =
+                            chart.data.labels.map(
+                                label =>
+                                    typeof label ===
+                                        "string"
+                                        ? translateUiText(
+                                            label
+                                        )
+                                        : label
+                            );
+                    }
+
+                    (
+                        chart.data?.datasets ||
+                        []
+                    ).forEach(dataset => {
+                        if (
+                            typeof dataset.label ===
+                            "string"
+                        ) {
+                            dataset.label =
+                                translateUiText(
+                                    dataset.label
+                                );
+                        }
+                    });
+
+                    const scales =
+                        chart.options?.scales ||
+                        {};
+
+                    Object.values(
+                        scales
+                    ).forEach(scale => {
+                        if (
+                            typeof scale?.title?.text ===
+                            "string"
+                        ) {
+                            scale.title.text =
+                                translateUiText(
+                                    scale.title.text
+                                );
+                        }
+                    });
+
+                    wrapChartTooltipCallbacks(
+                        chart
+                    );
+
+                    chart.update(
+                        "none"
+                    );
+                } catch (error) {
+                    console.warn(
+                        "Chart localization failed:",
+                        error
+                    );
+                }
+            });
+        }
+
+        function updateLanguageDocumentState() {
+            document.documentElement.lang =
+                currentLanguage === "pt-BR"
+                    ? "pt-BR"
+                    : "en";
+
+            const selector =
+                document.getElementById(
+                    "languageSelect"
+                );
+
+            if (selector) {
+                selector.value =
+                    currentLanguage;
+            }
+        }
+
+        function applyCurrentLanguage() {
+            if (applyingLanguage) {
+                return;
+            }
+
+            applyingLanguage =
+                true;
+
+            try {
+                updateLanguageDocumentState();
+
+                applyLanguageToElement(
+                    document.body
+                );
+
+                localizeCharts();
+            } finally {
+                applyingLanguage =
+                    false;
+            }
+        }
+
+        function changeInterfaceLanguage(language) {
+            currentLanguage =
+                language === "pt-BR"
+                    ? "pt-BR"
+                    : "en";
+
+            localStorage.setItem(
+                LANGUAGE_STORAGE_KEY,
+                currentLanguage
+            );
+
+            /*
+             * Renderiza novamente as telas para atualizar também
+             * conteúdos criados dinamicamente e gráficos.
+             */
+            if (
+                typeof renderAll ===
+                    "function" &&
+                typeof packages !==
+                    "undefined" &&
+                packages.length
+            ) {
+                renderAll();
+            }
+
+            applyCurrentLanguage();
+
+            window.setTimeout(
+                () => {
+                    applyCurrentLanguage();
+                    localizeCharts();
+                },
+                120
+            );
+        }
+
+        function initializeLanguageSystem() {
+            const selector =
+                document.getElementById(
+                    "languageSelect"
+                );
+
+            if (selector) {
+                selector.value =
+                    currentLanguage;
+
+                selector.addEventListener(
+                    "change",
+                    event => {
+                        changeInterfaceLanguage(
+                            event.target.value
+                        );
+                    }
+                );
+            }
+
+            applyCurrentLanguage();
+
+            languageObserver =
+                new MutationObserver(
+                    mutations => {
+                        if (applyingLanguage) {
+                            return;
+                        }
+
+                        applyingLanguage =
+                            true;
+
+                        try {
+                            mutations.forEach(
+                                mutation => {
+                                    if (
+                                        mutation.type ===
+                                        "characterData"
+                                    ) {
+                                        translateTextNode(
+                                            mutation.target
+                                        );
+
+                                        return;
+                                    }
+
+                                    mutation.addedNodes
+                                        .forEach(node => {
+                                            applyLanguageToElement(
+                                                node
+                                            );
+                                        });
+
+                                    if (
+                                        mutation.type ===
+                                        "attributes"
+                                    ) {
+                                        translateElementAttributes(
+                                            mutation.target
+                                        );
+                                    }
+                                }
+                            );
+                        } finally {
+                            applyingLanguage =
+                                false;
+                        }
+                    }
+                );
+
+            languageObserver.observe(
+                document.body,
+                {
+                    childList:
+                        true,
+
+                    subtree:
+                        true,
+
+                    characterData:
+                        true,
+
+                    attributes:
+                        true,
+
+                    attributeFilter: [
+                        "placeholder",
+                        "title",
+                        "aria-label"
+                    ]
+                }
+            );
+
+            window.addEventListener(
+                "beforeprint",
+                () => {
+                    applyCurrentLanguage();
+                }
+            );
+        }
+
+        window.translateUiText =
+            translateUiText;
+
+
+        initializeLanguageSystem();
+
         initializeInactivityControl();
 
         startApplication();
