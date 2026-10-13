@@ -5006,6 +5006,148 @@
                 animation-duration: 0.01ms !important;
             }
         }
+
+/* =====================================================
+   V4 — REDESIGN: TASKS + SPARE PART MODAL + ANIMAÇÕES
+   ===================================================== */
+@keyframes v4Rise{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes v4Fade{from{opacity:0}to{opacity:1}}
+@keyframes v4Pop{from{opacity:0;transform:translateY(24px) scale(.96)}to{opacity:1;transform:none}}
+@keyframes v4Row{from{opacity:0;transform:translateY(-10px);max-height:0}to{opacity:1;transform:none;max-height:600px}}
+
+/* ---------- JD groups ---------- */
+.v4-toolbar{display:flex;justify-content:flex-end;gap:8px;margin:0 0 12px}
+.v4-toolbar button{padding:7px 12px;font-size:11px;font-family:var(--font-bold);color:var(--muted);background:#fff;border:1px solid var(--border);border-radius:9px;transition:all .2s}
+.v4-toolbar button:hover{color:var(--blue);border-color:var(--blue-light);transform:translateY(-1px)}
+body .jd-group{margin:0 0 18px;background:var(--surface-soft);border:1px solid var(--border);border-radius:18px;overflow:hidden;animation:v4Fade .4s ease both}
+body .jd-group-header{position:sticky;top:92px;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0;padding:12px 18px;cursor:pointer;user-select:none;color:#fff;background:linear-gradient(90deg,var(--black),var(--black-soft));transition:background .25s}
+body .jd-group-header:hover{background:linear-gradient(90deg,#10172b,#1f2b47)}
+body .jd-group-header h3{margin:0;display:flex;align-items:center;gap:10px;font-family:var(--font-bold);font-size:.95rem;letter-spacing:.04em;color:#fff}
+body .jd-group-header h3::before{content:"▾";display:inline-block;font-size:.8rem;color:var(--blue-light);transition:transform .3s cubic-bezier(.4,0,.2,1)}
+body .jd-group.collapsed .jd-group-header h3::before{transform:rotate(-90deg)}
+body .jd-group-header .jd-count{padding:4px 11px;font-size:10px;color:#fff;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:999px}
+body .jd-group .task-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,370px),1fr));gap:16px;align-items:start;padding:16px;max-height:60000px;transition:opacity .3s ease}
+body .jd-group.collapsed .task-grid{display:none}
+
+/* ---------- Task cards ---------- */
+body .jd-group .task-card{position:relative;display:flex;flex-direction:column;margin:0;padding:0;overflow:hidden;background:#fff;border:1px solid var(--border);border-radius:16px;box-shadow:0 2px 8px rgba(15,23,42,.05);transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease;animation:v4Rise .45s cubic-bezier(.2,.8,.2,1) both}
+body .jd-group .task-card:nth-child(2){animation-delay:.05s}body .jd-group .task-card:nth-child(3){animation-delay:.1s}body .jd-group .task-card:nth-child(4){animation-delay:.15s}body .jd-group .task-card:nth-child(n+5){animation-delay:.2s}
+body .jd-group .task-card:hover,body .jd-group .task-card:focus-within{transform:translateY(-3px);border-color:#bfdbfe;box-shadow:0 14px 34px rgba(37,99,235,.13)}
+body .task-card-line{position:static;display:block;width:auto;height:4px;background:linear-gradient(90deg,var(--blue),var(--purple))}
+body .task-card-header{display:flex;flex-direction:column;gap:6px;padding:14px 18px 12px;background:linear-gradient(180deg,#f8fbff,#fff);border-bottom:1px solid var(--border)}
+body .task-document{align-self:flex-start;padding:3px 10px;font-family:var(--font-bold);font-size:10px;letter-spacing:.04em;color:var(--blue-dark);background:var(--blue-soft);border-radius:999px}
+body .task-title{margin:2px 0 0;font-family:var(--font-bold);font-size:.98rem;line-height:1.35;color:var(--text);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+body .task-template{margin:0;font-size:11px;line-height:1.4;color:var(--muted)}
+body .task-template strong{color:#475569}
+body .task-body{display:grid;gap:14px;padding:16px 18px 14px}
+body .task-body .field{display:flex;flex-direction:column;gap:5px;margin:0}
+body .task-body label{font-family:var(--font-bold);font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+body .task-body select,body .task-body input,body .task-body textarea{width:100%;padding:9px 11px;font-size:13px;color:var(--text);background:#fff;border:1.5px solid var(--border);border-radius:10px;outline:0;transition:border-color .2s,box-shadow .2s,background .2s}
+body .task-body textarea{min-height:76px;resize:vertical}
+body .task-body select:hover,body .task-body input:hover,body .task-body textarea:hover{border-color:#cbd5e1}
+body .task-body select:focus,body .task-body input:focus,body .task-body textarea:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(37,99,235,.12)}
+body .task-status-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:12px;background:var(--surface-soft);border:1px solid var(--border);border-radius:12px}
+body .task-status-grid select{padding:8px 6px;font-family:var(--font-bold);text-align:center}
+body .task-status-grid select[data-val="Yes"]{color:var(--success-dark);background:var(--success-soft);border-color:#6ee7b7}
+body .task-status-grid select[data-val="No"]{color:var(--danger-dark);background:var(--danger-soft);border-color:#fca5a5}
+body .task-save-state{margin:0;padding:7px 10px;font-size:10px;text-align:center;color:var(--muted);background:var(--surface-soft);border-radius:8px;transition:all .25s}
+
+/* ---------- Spare modal ---------- */
+body .spare-modal-backdrop{background:rgba(11,15,25,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);animation:v4Fade .25s ease both}
+body .spare-modal{display:flex;flex-direction:column;width:min(1080px,96vw);max-height:92vh;overflow:hidden;background:var(--surface-soft);border:0;border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,.4);animation:v4Pop .35s cubic-bezier(.2,.9,.25,1) both}
+body .spare-modal>form{display:flex;flex-direction:column;min-height:0;flex:1}
+body .spare-modal-header{padding:20px 26px;color:#fff;background:radial-gradient(circle at 12% 30%,rgba(37,99,235,.5),transparent 45%),radial-gradient(circle at 92% 20%,rgba(124,58,237,.4),transparent 40%),var(--black);border:0}
+body .spare-modal-header h3{margin:0;color:#fff;font-family:var(--font-bold);font-size:1.15rem;letter-spacing:.03em}
+body .spare-modal-header p{margin:4px 0 0;color:rgba(255,255,255,.7);font-size:12px}
+body .spare-modal-close{width:36px;height:36px;color:#fff;font-size:22px;line-height:1;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:10px;transition:all .2s}
+body .spare-modal-close:hover{background:var(--danger);border-color:var(--danger);transform:rotate(90deg)}
+body .spare-modal-body{flex:1;min-height:0;overflow-y:auto;padding:20px 26px;display:block;scroll-behavior:smooth}
+body .spare-origin-panel{display:grid;grid-template-columns:1fr 1fr 2fr;gap:12px;margin:0 0 20px;padding:14px;background:#fff;border:1px solid var(--border);border-radius:14px}
+body .spare-origin-panel .field{display:flex;flex-direction:column;gap:4px;margin:0}
+body .spare-origin-panel label,body .spare-material-entry-row td::before{font-family:var(--font-bold);font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+body .spare-origin-panel input{padding:8px 10px;font-size:13px;color:#475569;background:var(--surface-soft);border:1px solid var(--border);border-radius:9px}
+body .spare-materials-heading{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:0 0 12px}
+body .spare-materials-heading strong{display:block;font-family:var(--font-bold);font-size:1rem}
+body .spare-materials-heading span{font-size:12px;color:var(--muted)}
+body .spare-material-entry-shell{overflow:visible;background:transparent;border:0;box-shadow:none}
+body .spare-material-entry-table,body .spare-material-entry-table tbody{display:block;width:100%;min-width:0;border:0;background:transparent}
+body .spare-material-entry-table thead{display:none}
+body #spareMaterialRows{counter-reset:mat}
+body .spare-material-entry-row{counter-increment:mat;position:relative;display:grid;grid-template-columns:repeat(12,1fr);gap:12px 14px;margin:0 0 14px;padding:38px 18px 16px;background:#fff;border:1px solid var(--border);border-left:4px solid var(--blue);border-radius:14px;box-shadow:0 2px 8px rgba(15,23,42,.05);overflow:hidden;animation:v4Row .35s ease both;transition:box-shadow .2s,border-color .2s}
+body .spare-material-entry-row:focus-within{border-color:#bfdbfe;border-left-color:var(--purple);box-shadow:0 8px 24px rgba(37,99,235,.12)}
+body .spare-material-entry-row::before{content:"Material " counter(mat);position:absolute;top:11px;left:18px;font-family:var(--font-bold);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--blue-dark)}
+body .spare-material-entry-row td{display:flex;flex-direction:column;gap:5px;min-width:0;padding:0;border:0;background:transparent;width:auto}
+body .spare-material-entry-row td::before{content:attr(data-label)}
+body .spare-material-entry-row td:nth-child(1){grid-column:span 3}
+body .spare-material-entry-row td:nth-child(2){grid-column:span 2}
+body .spare-material-entry-row td:nth-child(3){grid-column:span 7}
+body .spare-material-entry-row td:nth-child(4),body .spare-material-entry-row td:nth-child(5){grid-column:span 4}
+body .spare-material-entry-row td:nth-child(6){grid-column:span 4}
+body .spare-material-entry-row td:nth-child(7){position:absolute;top:6px;right:10px;padding:0}
+body .spare-material-entry-row td:nth-child(7)::before{content:none}
+body .spare-material-entry-row input,body .spare-material-entry-row textarea{width:100%;min-width:0;padding:9px 11px;font-size:13px;background:#fff;border:1.5px solid var(--border);border-radius:10px;outline:0;transition:border-color .2s,box-shadow .2s}
+body .spare-material-entry-row textarea{height:40px;min-height:40px;resize:vertical}
+body .spare-material-entry-row input:focus,body .spare-material-entry-row textarea:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(37,99,235,.12)}
+body .spare-material-entry-row input:not(:placeholder-shown):valid,body .spare-material-entry-row textarea:not(:placeholder-shown):valid{border-color:#6ee7b7}
+body .spare-material-row-actions{display:flex;gap:6px}
+body .spare-material-plus,body .spare-material-remove{width:28px;height:28px;padding:0;display:grid;place-items:center;font-size:16px;line-height:1;border-radius:8px;transition:all .2s}
+body .spare-material-plus:hover{transform:scale(1.12)}
+body .spare-material-remove:hover:not(:disabled){transform:scale(1.12)}
+body .spare-modal-footer{display:flex;justify-content:flex-end;gap:10px;padding:14px 26px;background:#fff;border-top:1px solid var(--border);box-shadow:0 -8px 20px rgba(15,23,42,.05)}
+body .spare-form-error{margin-top:6px;padding:10px 14px;color:var(--danger-dark);background:var(--danger-soft);border-radius:10px;animation:v4Rise .25s ease both}
+@media (max-width:860px){
+  body .spare-origin-panel{grid-template-columns:1fr}
+  body .spare-material-entry-row td:nth-child(n){grid-column:1/-1}
+  body .jd-group-header{top:0}
+}
+@media (prefers-reduced-motion:reduce){
+  body .jd-group,body .jd-group .task-card,body .spare-modal,body .spare-modal-backdrop,body .spare-material-entry-row,body .spare-form-error{animation:none!important}
+}
+
+/* ===== V5 — layout das tasks (vence regras legadas com !important) ===== */
+body .jd-groups{display:flex!important;flex-direction:column!important;grid-template-columns:none!important;gap:16px!important}
+body .jd-group{width:100%!important;margin:0!important;overflow:clip;border-radius:16px}
+body .jd-group-header{position:relative!important;top:auto!important;padding:13px 18px!important}
+body .jd-group .task-grid{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(min(100%,380px),1fr))!important;gap:16px!important;padding:16px!important}
+body .jd-group.collapsed .task-grid{display:none!important}
+body .jd-group .task-card{width:auto!important;min-width:0}
+body .task-card-line{display:block!important;height:4px!important}
+body .task-card::before{display:none!important}
+body .task-card-header{padding:14px 40px 12px 18px!important}
+body .jd-group-header .jd-count{padding:4px 11px!important}
+
+/* ===== V5 — seletor de JD (Add Spare Part) ===== */
+@keyframes v5Slide{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:none}}
+.v5-picker-backdrop{position:fixed;inset:0;z-index:3000;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(11,15,25,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.v5-picker-backdrop.open{display:flex;animation:v4Fade .25s ease both}
+.v5-picker{display:flex;flex-direction:column;width:min(760px,96vw);max-height:88vh;overflow:hidden;background:var(--surface-soft);border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,.4);animation:v4Pop .35s cubic-bezier(.2,.9,.25,1) both}
+.v5-picker-header{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:20px 24px;color:#fff;background:radial-gradient(circle at 12% 30%,rgba(37,99,235,.5),transparent 45%),radial-gradient(circle at 92% 20%,rgba(124,58,237,.4),transparent 40%),var(--black)}
+.v5-picker-header h3{margin:0;font-family:var(--font-bold);font-size:1.15rem;letter-spacing:.03em}
+.v5-picker-header p{margin:4px 0 0;font-size:12px;color:rgba(255,255,255,.7)}
+.v5-picker-close{width:36px;height:36px;flex:0 0 auto;font-size:22px;line-height:1;color:#fff;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:10px;transition:all .2s}
+.v5-picker-close:hover{background:var(--danger);border-color:var(--danger);transform:rotate(90deg)}
+.v5-picker-tools{display:flex;flex-wrap:wrap;gap:10px;padding:14px 24px;background:#fff;border-bottom:1px solid var(--border)}
+.v5-picker-search{flex:1 1 240px;min-width:0;padding:10px 13px;font-size:13px;border:1.5px solid var(--border);border-radius:10px;outline:0;transition:border-color .2s,box-shadow .2s}
+.v5-picker-search:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(37,99,235,.12)}
+.v5-picker-tabs{display:flex;padding:3px;background:var(--surface-soft);border:1px solid var(--border);border-radius:11px}
+.v5-picker-tabs button{padding:7px 13px;font-family:var(--font-bold);font-size:11px;color:var(--muted);background:transparent;border:0;border-radius:8px;transition:all .2s}
+.v5-picker-tabs button.active{color:#fff;background:var(--blue);box-shadow:0 4px 12px rgba(37,99,235,.3)}
+.v5-picker-list{display:flex;flex-direction:column;gap:10px;padding:16px 24px 22px;overflow-y:auto}
+.v5-jd-card{display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:14px;width:100%;padding:13px 16px;text-align:left;color:var(--text);background:#fff;border:1.5px solid var(--border);border-left:4px solid var(--warning);border-radius:14px;transition:transform .2s,box-shadow .2s,border-color .2s;animation:v5Slide .35s ease both;animation-delay:calc(var(--i)*35ms)}
+.v5-jd-card.has-spares{border-left-color:var(--success)}
+.v5-jd-card:hover,.v5-jd-card:focus-visible{outline:0;transform:translateX(4px);border-color:var(--blue-light);border-left-color:var(--blue);box-shadow:0 10px 26px rgba(37,99,235,.14)}
+.v5-jd-badge{padding:6px 11px;font-family:var(--font-bold);font-size:12px;color:var(--blue-dark);background:var(--blue-soft);border-radius:9px;white-space:nowrap}
+.v5-jd-main{display:flex;flex-direction:column;gap:3px;min-width:0}
+.v5-jd-main strong{font-family:var(--font-bold);font-size:13px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.v5-jd-main small{font-size:11px;color:var(--muted)}
+.v5-jd-status{padding:4px 10px;font-size:10px;font-family:var(--font-bold);color:#92400e;background:var(--warning-soft);border-radius:999px;white-space:nowrap}
+.v5-jd-card.has-spares .v5-jd-status{color:var(--success-dark);background:var(--success-soft)}
+.v5-jd-go{font-family:var(--font-bold);font-size:12px;color:var(--blue);white-space:nowrap;transition:transform .2s}
+.v5-jd-card:hover .v5-jd-go{transform:translateX(3px)}
+.v5-picker-empty{display:flex;flex-direction:column;gap:6px;align-items:center;padding:42px 20px;text-align:center;color:var(--muted)}
+.v5-picker-empty strong{font-size:1rem;color:var(--text)}
+@media (max-width:640px){.v5-jd-card{grid-template-columns:auto 1fr}.v5-jd-status,.v5-jd-go{grid-column:2}}
+@media (prefers-reduced-motion:reduce){.v5-picker,.v5-picker-backdrop.open,.v5-jd-card{animation:none!important}}
 </style>
 </head>
 
@@ -7797,7 +7939,7 @@
                             ).join("");
 
                         return `
-                            <section class="jd-group">
+                            <section class="jd-group${window.__cmmsCollapsed && window.__cmmsCollapsed.has(jdNumber) ? ' collapsed' : ''}" data-jd="${escapeHtml(jdNumber)}">
                                 <header class="jd-group-header">
                                     <h3>
                                         JD ${escapeHtml(jdNumber)}
@@ -12264,72 +12406,155 @@
            EVENTOS
            ===================================================== */
 
+        /* =====================================================
+           V5 — SELEÇÃO DE JD PARA ADD SPARE PART
+           ===================================================== */
+        function openSpareJdPickerV5() {
+            const allRequired = getSpareRequiredTasks();
+
+            if (!allRequired.length) {
+                showToast("No JD has Spare Part Required set to Yes.", "warning");
+                return;
+            }
+
+            let host = document.getElementById("spareJdPickerV5");
+            const startShowAll = !allRequired.some(task => !getActiveSpareParts().some(item => item.taskId === task.id));
+
+            if (!host) {
+                host = document.createElement("div");
+                host.id = "spareJdPickerV5";
+                host.className = "v5-picker-backdrop";
+                host.setAttribute("role", "dialog");
+                host.setAttribute("aria-modal", "true");
+                host.innerHTML = `
+                    <div class="v5-picker">
+                        <header class="v5-picker-header">
+                            <div>
+                                <h3>Add Spare Part</h3>
+                                <p>Select a JD that requires spare parts. JDs still without materials come first.</p>
+                            </div>
+                            <button type="button" class="v5-picker-close" data-v5="close" aria-label="Close">×</button>
+                        </header>
+                        <div class="v5-picker-tools">
+                            <input type="search" class="v5-picker-search" placeholder="Search JD, WorkCenter, title or document..." autocomplete="off">
+                            <div class="v5-picker-tabs">
+                                <button type="button" data-v5-tab="pending"></button>
+                                <button type="button" data-v5-tab="all"></button>
+                            </div>
+                        </div>
+                        <div class="v5-picker-list"></div>
+                    </div>`;
+                document.body.appendChild(host);
+            }
+
+            const searchInput = host.querySelector(".v5-picker-search");
+            const listEl = host.querySelector(".v5-picker-list");
+            const state = { showAll: startShowAll, query: "" };
+            searchInput.value = "";
+
+            function close() {
+                host.classList.remove("open");
+                document.removeEventListener("keydown", onKey, true);
+            }
+
+            function onKey(event) {
+                if (event.key === "Escape") {
+                    event.stopPropagation();
+                    close();
+                }
+            }
+
+            function render() {
+                const required = getSpareRequiredTasks();
+                const counts = new Map();
+
+                getActiveSpareParts().forEach(item => {
+                    counts.set(item.taskId, (counts.get(item.taskId) || 0) + 1);
+                });
+
+                const pending = required.filter(task => !counts.has(task.id));
+                const query = state.query.trim().toLowerCase();
+
+                host.querySelector('[data-v5-tab="pending"]').textContent = `Pending (${pending.length})`;
+                host.querySelector('[data-v5-tab="all"]').textContent = `All Spare Required (${required.length})`;
+                host.querySelectorAll("[data-v5-tab]").forEach(button => {
+                    button.classList.toggle("active", (button.dataset.v5Tab === "all") === state.showAll);
+                });
+
+                const items = (state.showAll ? required : pending)
+                    .filter(task => !query || [task.jdNumber, task.workCenter, task.jobTitle, task.documentNumber]
+                        .join(" ").toLowerCase().includes(query))
+                    .sort((a, b) => String(a.jdNumber).localeCompare(String(b.jdNumber), "en", { numeric: true }));
+
+                if (!items.length) {
+                    listEl.innerHTML = `
+                        <div class="v5-picker-empty">
+                            <strong>${state.showAll || query ? "No JD found" : "All caught up"}</strong>
+                            <span>${query ? "Try another search." : (state.showAll ? "No JD has Spare Required = Yes." : "Every JD with Spare Required = Yes already has materials. Use the All tab to add more.")}</span>
+                        </div>`;
+                    return;
+                }
+
+                listEl.innerHTML = items.map((task, index) => {
+                    const count = counts.get(task.id) || 0;
+
+                    return `
+                        <button type="button" class="v5-jd-card ${count ? "has-spares" : "is-pending"}" data-task-id="${escapeHtml(task.id)}" style="--i:${Math.min(index, 12)}">
+                            <span class="v5-jd-badge">JD ${escapeHtml(task.jdNumber || "—")}</span>
+                            <span class="v5-jd-main">
+                                <strong>${escapeHtml(task.jobTitle || "No Job Title")}</strong>
+                                <small>${escapeHtml(task.workCenter || "No WorkCenter")} · Doc ${escapeHtml(task.documentNumber || "—")}</small>
+                            </span>
+                            <span class="v5-jd-status">${count ? `${count} material${count > 1 ? "s" : ""}` : "No spares yet"}</span>
+                            <span class="v5-jd-go">${count ? "Add more" : "Add spares"} →</span>
+                        </button>`;
+                }).join("");
+            }
+
+            host.onclick = event => {
+                if (event.target === host || event.target.closest('[data-v5="close"]')) {
+                    close();
+                    return;
+                }
+
+                const tab = event.target.closest("[data-v5-tab]");
+
+                if (tab) {
+                    state.showAll = tab.dataset.v5Tab === "all";
+                    render();
+                    return;
+                }
+
+                const card = event.target.closest(".v5-jd-card");
+
+                if (card) {
+                    const taskId = card.dataset.taskId;
+                    close();
+                    openSparePartModal(taskId);
+                }
+            };
+
+            searchInput.oninput = () => {
+                state.query = searchInput.value;
+                render();
+            };
+
+            searchInput.onkeydown = event => {
+                if (event.key === "Enter") {
+                    const first = listEl.querySelector(".v5-jd-card");
+                    first && first.click();
+                }
+            };
+
+            render();
+            document.addEventListener("keydown", onKey, true);
+            host.classList.add("open");
+            window.setTimeout(() => searchInput.focus(), 60);
+        }
+
         addSparePartButton.addEventListener(
             "click",
-            () => {
-                const eligibleTasks =
-                    getSpareRequiredTasks();
-
-                if (!eligibleTasks.length) {
-                    showToast(
-                        "No JD has Spare Part Required set to Yes.",
-                        "warning"
-                    );
-
-                    return;
-                }
-
-                const options =
-                    eligibleTasks.map(
-                        (
-                            task,
-                            index
-                        ) =>
-                            (
-                                `${index + 1}. ` +
-                                `${task.jdNumber} — ` +
-                                `${task.workCenter} — ` +
-                                `${task.jobTitle}`
-                            )
-                    );
-
-                const response =
-                    window.prompt(
-                        (
-                            "Select the JD number by typing the list number:\n\n" +
-                            options.join("\n")
-                        ),
-                        "1"
-                    );
-
-                if (response === null) {
-                    return;
-                }
-
-                const selectedIndex =
-                    Number(
-                        response
-                    ) -
-                    1;
-
-                const task =
-                    eligibleTasks[
-                        selectedIndex
-                    ];
-
-                if (!task) {
-                    showToast(
-                        "Invalid JD selection.",
-                        "warning"
-                    );
-
-                    return;
-                }
-
-                openSparePartModal(
-                    task.id
-                );
-            }
+            openSpareJdPickerV5
         );
 
         sparePartForm.addEventListener(
@@ -12647,7 +12872,7 @@
                     : "false";
 
             row.innerHTML = `
-                <td>
+                <td data-label="SAP Code *">
                     <input
                         data-material-field="sapCode"
                         type="text"
@@ -12658,7 +12883,7 @@
                     >
                 </td>
 
-                <td>
+                <td data-label="Qty *">
                     <input
                         data-material-field="quantity"
                         type="number"
@@ -12670,7 +12895,7 @@
                     >
                 </td>
 
-                <td>
+                <td data-label="Material Description *">
                     <input
                         data-material-field="materialDescription"
                         type="text"
@@ -12681,7 +12906,7 @@
                     >
                 </td>
 
-                <td>
+                <td data-label="Vendor / Supplier *">
                     <input
                         data-material-field="vendorSupplier"
                         type="text"
@@ -12692,7 +12917,7 @@
                     >
                 </td>
 
-                <td>
+                <td data-label="Part Number *">
                     <input
                         data-material-field="partNumber"
                         type="text"
@@ -12703,7 +12928,7 @@
                     >
                 </td>
 
-                <td>
+                <td data-label="TAGs *">
                     <textarea
                         data-material-field="tags"
                         required
@@ -12711,7 +12936,7 @@
                     >${escapeHtml(material.tags || "")}</textarea>
                 </td>
 
-                <td>
+                <td data-label="">
                     <div class="spare-material-row-actions">
                         <button
                             class="spare-material-plus"
@@ -14435,6 +14660,46 @@
 
 
 startApplication();
+    </script>
+
+    <script>
+    /* V4 — recolher/expandir JDs + cor dos selects Yes/No */
+    (function () {
+        window.__cmmsCollapsed = window.__cmmsCollapsed || new Set();
+        function init() {
+            var host = document.getElementById("jdGroups");
+            if (!host) return;
+            var bar = document.createElement("div");
+            bar.className = "v4-toolbar";
+            bar.innerHTML = '<button type="button" data-act="collapse">Collapse all</button><button type="button" data-act="expand">Expand all</button>';
+            host.parentElement.insertBefore(bar, host);
+            bar.addEventListener("click", function (e) {
+                var act = e.target.getAttribute("data-act");
+                if (!act) return;
+                host.querySelectorAll(".jd-group").forEach(function (g) {
+                    g.classList.toggle("collapsed", act === "collapse");
+                    var k = g.getAttribute("data-jd");
+                    act === "collapse" ? window.__cmmsCollapsed.add(k) : window.__cmmsCollapsed.delete(k);
+                });
+            });
+            host.addEventListener("click", function (e) {
+                var h = e.target.closest(".jd-group-header");
+                if (!h) return;
+                var g = h.parentElement, k = g.getAttribute("data-jd");
+                var c = g.classList.toggle("collapsed");
+                c ? window.__cmmsCollapsed.add(k) : window.__cmmsCollapsed.delete(k);
+            });
+            function tint(root) {
+                root.querySelectorAll(".task-status-grid select").forEach(function (s) { s.setAttribute("data-val", s.value); });
+            }
+            host.addEventListener("change", function (e) {
+                if (e.target.matches && e.target.matches(".task-status-grid select")) e.target.setAttribute("data-val", e.target.value);
+            });
+            new MutationObserver(function () { tint(host); }).observe(host, { childList: true });
+            tint(host);
+        }
+        document.readyState === "loading" ? document.addEventListener("DOMContentLoaded", init) : init();
+    })();
     </script>
 
     <!-- TRANSIÇÃO ENTRE TELAS -->
