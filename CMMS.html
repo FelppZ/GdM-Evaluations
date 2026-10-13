@@ -5108,7 +5108,7 @@ body .spare-form-error{margin-top:6px;padding:10px 14px;color:var(--danger-dark)
 body .jd-groups{display:flex!important;flex-direction:column!important;grid-template-columns:none!important;gap:16px!important}
 body .jd-group{width:100%!important;margin:0!important;overflow:clip;border-radius:16px}
 body .jd-group-header{position:relative!important;top:auto!important;padding:13px 18px!important}
-body .jd-group .task-grid{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(min(100%,380px),1fr))!important;gap:16px!important;padding:16px!important}
+body .jd-group .task-grid{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr))!important;gap:16px!important;padding:16px!important}
 body .jd-group.collapsed .task-grid{display:none!important}
 body .jd-group .task-card{width:auto!important;min-width:0}
 body .task-card-line{display:block!important;height:4px!important}
@@ -5148,6 +5148,15 @@ body .jd-group-header .jd-count{padding:4px 11px!important}
 .v5-picker-empty strong{font-size:1rem;color:var(--text)}
 @media (max-width:640px){.v5-jd-card{grid-template-columns:auto 1fr}.v5-jd-status,.v5-jd-go{grid-column:2}}
 @media (prefers-reduced-motion:reduce){.v5-picker,.v5-picker-backdrop.open,.v5-jd-card{animation:none!important}}
+
+/* ===== V6 — task ocupa o bloco inteiro ===== */
+body .jd-group .task-card{container-type:inline-size;justify-self:stretch!important;width:100%!important;max-width:none!important;margin:0!important}
+@container (min-width:700px){
+  .task-body{grid-template-columns:1fr 1fr!important;column-gap:18px}
+  .task-body>.task-status-grid,.task-body>.task-save-state,.task-body>.field:last-of-type{grid-column:1/-1}
+  .task-body>.field:has(textarea){grid-column:1/-1}
+  .task-body textarea{min-height:64px!important}
+}
 </style>
 </head>
 
