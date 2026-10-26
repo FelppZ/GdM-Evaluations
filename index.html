@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,6 +16,9 @@
         --blue-soft: #eff6ff;
         --purple: #7c3aed;
         --purple-dark: #6d28d9;
+        --green: #16a34a;
+        --green-dark: #15803d;
+        --green-soft: #f0fdf4;
         --text: #0f172a;
         --muted: #64748b;
         --border: #e2e8f0;
@@ -114,8 +117,8 @@
     .options {
         display: grid;
         width: 100%;
-        max-width: 880px;
-        grid-template-columns: repeat(2, 1fr);
+        max-width: 1180px;
+        grid-template-columns: repeat(3, 1fr);
         gap: 28px;
     }
 
@@ -149,6 +152,11 @@
         --accent-dark: var(--purple-dark);
     }
 
+    .option.compliance {
+        --accent: var(--green);
+        --accent-dark: var(--green-dark);
+    }
+
     .option:hover,
     .option:focus-visible {
         transform: translateY(-6px);
@@ -172,6 +180,7 @@
     }
 
     .option.cmms .option-icon { background: #f5f3ff; }
+    .option.compliance .option-icon { background: var(--green-soft); }
 
     .option:hover .option-icon,
     .option:focus-visible .option-icon {
@@ -199,6 +208,11 @@
     .option:hover .option-desc,
     .option:focus-visible .option-desc { color: rgba(255, 255, 255, 0.85); }
 
+    @media (max-width: 960px) {
+        .options { grid-template-columns: repeat(2, 1fr); }
+        .option.compliance { grid-column: 1 / -1; min-height: 200px; }
+    }
+
     @media (max-width: 720px) {
         .app-header { padding: 14px 18px; }
         .brand { gap: 10px; }
@@ -207,6 +221,7 @@
         .brand-line { height: 30px; }
         .brand-title { font-size: 1rem; }
         .options { grid-template-columns: 1fr; }
+        .option.compliance { grid-column: auto; }
         .option { min-height: 220px; padding: 24px; }
     }
 
@@ -229,7 +244,7 @@
         <img class="brand-logo shell" alt="Shell" id="shellLogo"
              src="https://thumb.wikimedia.org/wikipedia/en/thumb/e/e8/Shell_logo.svg/1280px-Shell_logo.svg.png?utm_source=en.wikipedia.org&amp;utm_campaign=index&amp;utm_content=thumbnail"
              onerror="this.style.display='none';document.getElementById('shellFallback').style.display='block';">
-        <!-- Fallback caso o logo da Shell não carregue: troque o src acima por sua própria imagem -->
+        <!-- Fallback in case the Shell logo fails to load: replace the src above with your own image -->
         <svg id="shellFallback" class="brand-logo shell" viewBox="0 0 100 100" style="display:none" aria-label="Shell">
             <path d="M50 6C33 6 18 10 6 18c6 6 10 18 11 32 1 18-4 32-11 40 12 3 27 4 44 4s32-1 44-4c-7-8-12-22-11-40 1-14 5-26 11-32C82 10 67 6 50 6z" fill="#fbce07" stroke="#dd1d21" stroke-width="5" stroke-linejoin="round"/>
         </svg>
@@ -241,7 +256,7 @@
 </header>
 
 <main>
-    <nav class="options" aria-label="Avaliações">
+    <nav class="options" aria-label="Evaluations">
 
         <a class="option" href="G09.html">
             <span class="option-icon" aria-hidden="true">
@@ -253,7 +268,7 @@
             </span>
             <span>
                 <h2 class="option-name">G09 Reviews</h2>
-                <p class="option-desc">Acompanhe e avalie os pacotes e disciplinas do G09.</p>
+                <p class="option-desc">Track and evaluate the G09 packages and disciplines.</p>
             </span>
         </a>
 
@@ -265,7 +280,20 @@
             </span>
             <span>
                 <h2 class="option-name">CMMS JOBs Evaluation</h2>
-                <p class="option-desc">Avalie os jobs do CMMS e registre os resultados.</p>
+                <p class="option-desc">Evaluate the CMMS jobs and record the results.</p>
+            </span>
+        </a>
+
+        <a class="option compliance" href="comp.html">
+            <span class="option-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 3 4.5 6v5.5c0 4.4 3.1 8.2 7.5 9.5 4.4-1.3 7.5-5.1 7.5-9.5V6z"/>
+                    <path d="m9 12 2 2 4-4"/>
+                </svg>
+            </span>
+            <span>
+                <h2 class="option-name">Compliance</h2>
+                <p class="option-desc">Track and record compliance checks.</p>
             </span>
         </a>
 
