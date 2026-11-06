@@ -12881,6 +12881,1445 @@ saveMonthlySnapshot =
 
 /* REGULATORY_ZERO_CO_GRAPH_FIX_END */
 
+/* REGULATORY_DYNAMIC_MODULE_BLOCKS_START */
+
+/*
+ * ============================================================
+ * BLOCOS DINÂMICOS DOS MÓDULOS DO MENU LATERAL
+ * ============================================================
+ *
+ * Não existe lista fixa de módulos.
+ *
+ * Os blocos são criados com base nos elementos:
+ *
+ *     [data-monthly-sheet]
+ *
+ * existentes no menu lateral.
+ *
+ * Dessa forma, qualquer aba exibida no menu lateral será
+ * representada por exatamente um bloco no Dashboard.
+ */
+
+state.moduleBlockMetric =
+    state.moduleBlockMetric ||
+    "percentage";
+
+
+/*
+ * Normaliza apenas os quatro status válidos.
+ *
+ * Qualquer outro conteúdo é tratado como NV para o indicador
+ * de normas endereçadas.
+ */
+function regulatoryModuleBlockStatus(
+    value
+) {
+    const normalized =
+        String(value ?? "")
+            .replace(/\u00a0/g, " ")
+            .trim()
+            .toUpperCase();
+
+    if (
+        normalized === "CO" ||
+        normalized === "NC" ||
+        normalized === "NA" ||
+        normalized === "NV"
+    ) {
+        return normalized;
+    }
+
+    return "NV";
+}
+
+
+/*
+ * Retorna o nome do módulo/aba de uma norma.
+ */
+function regulatoryModuleBlockSheetName(
+    regulation
+) {
+    return String(
+        regulation?.sourceSheet ||
+        regulation?.module ||
+        regulation?.sheetName ||
+        regulation?.tab ||
+        regulation?.aba ||
+        ""
+    ).trim();
+}
+
+
+/*
+ * Obtém os módulos diretamente do menu lateral.
+ *
+ * A ordem dos blocos será a mesma ordem dos módulos
+ * apresentados no menu.
+ *
+ * Se o menu ainda não tiver sido renderizado, utiliza os nomes
+ * encontrados em state.regulations como alternativa temporária.
+ */
+function regulatoryModuleBlocksFromSidebar() {
+    const result = [];
+    const added = new Set();
+
+    const sidebarButtons =
+        document.querySelectorAll(
+            (
+                ".application > .navigation " +
+                "[data-monthly-sheet]"
+            )
+        );
+
+    sidebarButtons.forEach(button => {
+        const sheetName =
+            String(
+                button.dataset.monthlySheet ||
+                ""
+            ).trim();
+
+        if (
+            !sheetName ||
+            added.has(sheetName)
+        ) {
+            return;
+        }
+
+        added.add(sheetName);
+
+        result.push({
+            name:
+                sheetName,
+
+            menuButton:
+                button
+        });
+    });
+
+    /*
+     * Alternativa enquanto o menu lateral ainda está sendo
+     * construído pelo primeiro carregamento do Firebase.
+     */
+    if (!result.length) {
+        Object.values(
+            state.regulations || {}
+        ).forEach(regulation => {
+            const sheetName =
+                regulatoryModuleBlockSheetName(
+                    regulation
+                );
+
+            if (
+                !sheetName ||
+                added.has(sheetName)
+            ) {
+                return;
+            }
+
+            added.add(sheetName);
+
+            result.push({
+                name:
+                    sheetName,
+
+                menuButton:
+                    null
+            });
+        });
+
+        result.sort(
+            (first, second) =>
+                first.name.localeCompare(
+                    second.name,
+                    "pt-BR",
+                    {
+                        numeric: true,
+                        sensitivity: "base"
+                    }
+                )
+        );
+    }
+
+    return result;
+}
+
+
+/*
+ * Calcula os indicadores exatamente para os módulos existentes
+ * no menu lateral.
+ *
+ * Somente normas ativas entram no cálculo.
+ *
+ * Endereçada:
+ *     CO + NC + NA
+ *
+ * Não endereçada:
+ *     NV
+ */
+function regulatoryModuleBlocksStats() {
+    const modules =
+        regulatoryModuleBlocksFromSidebar();
+
+    const statistics =
+        new Map();
+
+    modules.forEach(module => {
+        statistics.set(
+            module.name,
+            {
+                name:
+                    module.name,
+
+                total:
+                    0,
+
+                addressed:
+                    0,
+
+                CO:
+                    0,
+
+                NC:
+                    0,
+
+                NA:
+                    0,
+
+                NV:
+                    0,
+
+                percentage:
+                    0
+            }
+        );
+    });
+
+    Object.values(
+        state.regulations || {}
+    ).forEach(regulation => {
+        if (
+            !regulation ||
+            regulation.active === false
+        ) {
+            return;
+        }
+
+        const sheetName =
+            regulatoryModuleBlockSheetName(
+                regulation
+            );
+
+        if (!sheetName) {
+            return;
+        }
+
+        /*
+         * Se o menu ainda não estava pronto quando a função
+         * começou, garante que o módulo não será perdido.
+         */
+        if (!statistics.has(sheetName)) {
+            statistics.set(
+                sheetName,
+                {
+                    name:
+                        sheetName,
+
+                    total:
+                        0,
+
+                    addressed:
+                        0,
+
+                    CO:
+                        0,
+
+                    NC:
+                        0,
+
+                    NA:
+                        0,
+
+                    NV:
+                        0,
+
+                    percentage:
+                        0
+                }
+            );
+        }
+
+        const result =
+            statistics.get(
+                sheetName
+            );
+
+        const status =
+            regulatoryModuleBlockStatus(
+                regulation.status
+            );
+
+        result.total += 1;
+        result[status] += 1;
+
+        if (
+            status === "CO" ||
+            status === "NC" ||
+            status === "NA"
+        ) {
+            result.addressed += 1;
+        }
+    });
+
+    statistics.forEach(result => {
+        result.percentage =
+            result.total > 0
+                ? Number(
+                    (
+                        result.addressed /
+                        result.total *
+                        100
+                    ).toFixed(1)
+                )
+                : 0;
+    });
+
+    /*
+     * Mantém primeiro a ordem do menu lateral.
+     */
+    const ordered = [];
+
+    modules.forEach(module => {
+        const result =
+            statistics.get(
+                module.name
+            );
+
+        if (result) {
+            ordered.push(result);
+            statistics.delete(
+                module.name
+            );
+        }
+    });
+
+    /*
+     * Caso alguma aba ainda não esteja no menu, adiciona ao final
+     * sem perder os seus dados.
+     */
+    const remaining =
+        [...statistics.values()]
+            .sort(
+                (first, second) =>
+                    first.name.localeCompare(
+                        second.name,
+                        "pt-BR",
+                        {
+                            numeric: true,
+                            sensitivity: "base"
+                        }
+                    )
+            );
+
+    return [
+        ...ordered,
+        ...remaining
+    ];
+}
+
+
+function regulatoryModuleBlockPercent(
+    value
+) {
+    return (
+        Number(value || 0)
+            .toLocaleString(
+                "pt-BR",
+                {
+                    minimumFractionDigits: 1,
+                    maximumFractionDigits: 1
+                }
+            ) +
+        "%"
+    );
+}
+
+
+/*
+ * Define a cor do bloco com base no percentual endereçado.
+ */
+function regulatoryModuleBlockTone(
+    percentage,
+    total
+) {
+    if (
+        total <= 0 ||
+        percentage <= 0
+    ) {
+        return "#94a3b8";
+    }
+
+    if (percentage < 50) {
+        return "#ef4444";
+    }
+
+    if (percentage < 80) {
+        return "#f59e0b";
+    }
+
+    if (percentage < 100) {
+        return "#2563eb";
+    }
+
+    return "#10b981";
+}
+
+
+/*
+ * Instala os estilos do painel.
+ */
+function regulatoryModuleBlocksInstallStyle() {
+    if (
+        document.getElementById(
+            "regulatoryDynamicModuleBlocksStyle"
+        )
+    ) {
+        return;
+    }
+
+    const style =
+        document.createElement(
+            "style"
+        );
+
+    style.id =
+        "regulatoryDynamicModuleBlocksStyle";
+
+    style.textContent = `
+        #regulatoryDynamicModuleBlocks {
+            margin: 0 0 20px;
+            padding: 20px;
+
+            background: #ffffff;
+
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+
+            box-shadow: var(--shadow);
+        }
+
+        .regulatory-module-blocks-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 18px;
+
+            margin-bottom: 16px;
+        }
+
+        .regulatory-module-blocks-header h3 {
+            margin: 0 0 6px;
+
+            font-family: var(--font-bold);
+            text-transform: uppercase;
+        }
+
+        .regulatory-module-blocks-header p {
+            max-width: 820px;
+            margin: 0;
+
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .regulatory-module-blocks-controls {
+            display: inline-flex;
+            flex: 0 0 auto;
+            gap: 5px;
+
+            padding: 4px;
+
+            background: #f1f5f9;
+
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+
+        .regulatory-module-block-mode {
+            min-height: 34px;
+            padding: 6px 11px;
+
+            color: #475569;
+            background: transparent;
+
+            border: 0;
+            border-radius: 7px;
+
+            font-family: var(--font-bold);
+            font-size: 9px;
+        }
+
+        .regulatory-module-block-mode:hover,
+        .regulatory-module-block-mode.active {
+            color: #ffffff;
+            background: var(--blue);
+        }
+
+        .regulatory-module-blocks-summary {
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    4,
+                    minmax(130px, 1fr)
+                );
+
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .regulatory-module-summary-card {
+            padding: 12px 14px;
+
+            background: var(--surface-soft);
+
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+
+        .regulatory-module-summary-card span {
+            display: block;
+            margin-bottom: 6px;
+
+            color: var(--muted);
+
+            font-family: var(--font-bold);
+            font-size: 8px;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .regulatory-module-summary-card strong {
+            font-family: var(--font-bold);
+            font-size: 21px;
+        }
+
+        .regulatory-module-vessel {
+            position: relative;
+
+            padding: 26px 28px;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #f8fafc,
+                    #eef3f8
+                );
+
+            border: 2px solid #64748b;
+
+            border-radius:
+                70px 15px 15px 70px;
+
+            box-shadow:
+                inset 0 0 0 5px #ffffff,
+                inset 0 0 0 6px #cbd5e1;
+        }
+
+        .regulatory-module-vessel::before {
+            position: absolute;
+            top: -21px;
+            right: 42px;
+
+            content: "FWD ➤";
+
+            color: #475569;
+
+            font-family: var(--font-bold);
+            font-size: 10px;
+            letter-spacing: 0.08em;
+        }
+
+        .regulatory-module-blocks-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(145px, 1fr)
+                );
+
+            gap: 8px;
+        }
+
+        .regulatory-module-block {
+            position: relative;
+            z-index: 1;
+
+            display: flex;
+            min-width: 0;
+            min-height: 122px;
+
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+
+            padding: 11px 9px;
+            overflow: hidden;
+
+            color: var(--text);
+            background: #ffffff;
+
+            border:
+                2px solid
+                var(
+                    --module-block-tone,
+                    #94a3b8
+                );
+
+            border-radius: 7px;
+
+            text-align: center;
+
+            box-shadow:
+                0 3px 10px
+                rgba(15, 23, 42, 0.08);
+
+            transition:
+                transform 0.18s ease,
+                box-shadow 0.18s ease,
+                border-color 0.18s ease;
+        }
+
+        .regulatory-module-block::before {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            z-index: -1;
+
+            height:
+                var(
+                    --module-block-progress,
+                    0%
+                );
+
+            content: "";
+
+            background:
+                var(
+                    --module-block-tone,
+                    #94a3b8
+                );
+
+            opacity: 0.15;
+
+            transition: height 0.4s ease;
+        }
+
+        .regulatory-module-block:hover {
+            z-index: 5;
+
+            transform:
+                translateY(-4px)
+                scale(1.015);
+
+            box-shadow:
+                0 12px 25px
+                rgba(15, 23, 42, 0.16);
+        }
+
+        .regulatory-module-block-name {
+            display: block;
+            width: 100%;
+            overflow: hidden;
+
+            color:
+                var(
+                    --module-block-tone,
+                    #334155
+                );
+
+            font-family: var(--font-bold);
+            font-size: 13px;
+            line-height: 1.2;
+
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .regulatory-module-block-value {
+            display: block;
+
+            color: #0f172a;
+
+            font-family: var(--font-bold);
+            font-size: 20px;
+            line-height: 1;
+        }
+
+        .regulatory-module-block-caption {
+            color: #64748b;
+            font-size: 8px;
+        }
+
+        .regulatory-module-block-breakdown {
+            color: #64748b;
+            font-size: 8px;
+            line-height: 1.35;
+        }
+
+        .regulatory-module-block-total {
+            color: #475569;
+            font-size: 8px;
+        }
+
+        .regulatory-module-blocks-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+
+            margin-top: 13px;
+
+            color: var(--muted);
+            font-size: 9px;
+        }
+
+        .regulatory-module-legend-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .regulatory-module-legend-dot {
+            width: 9px;
+            height: 9px;
+
+            border-radius: 50%;
+        }
+
+        @media (max-width: 900px) {
+            .regulatory-module-blocks-header {
+                flex-direction: column;
+            }
+
+            .regulatory-module-blocks-summary {
+                grid-template-columns:
+                    repeat(
+                        2,
+                        minmax(120px, 1fr)
+                    );
+            }
+
+            .regulatory-module-vessel {
+                padding: 22px 18px;
+                border-radius: 35px 12px 12px 35px;
+            }
+        }
+
+        @media (max-width: 520px) {
+            #regulatoryDynamicModuleBlocks {
+                padding: 14px;
+            }
+
+            .regulatory-module-blocks-controls {
+                width: 100%;
+            }
+
+            .regulatory-module-block-mode {
+                flex: 1;
+            }
+
+            .regulatory-module-blocks-summary {
+                grid-template-columns: 1fr;
+            }
+
+            .regulatory-module-blocks-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .regulatory-module-block {
+                min-height: 112px;
+            }
+        }
+    `;
+
+    document.head.appendChild(
+        style
+    );
+}
+
+
+/*
+ * Cria o painel no Dashboard.
+ */
+function regulatoryModuleBlocksEnsurePanel() {
+    regulatoryModuleBlocksInstallStyle();
+
+    let panel =
+        document.getElementById(
+            "regulatoryDynamicModuleBlocks"
+        );
+
+    if (panel) {
+        return panel;
+    }
+
+    panel =
+        document.createElement(
+            "section"
+        );
+
+    panel.id =
+        "regulatoryDynamicModuleBlocks";
+
+    panel.innerHTML = `
+        <div class="regulatory-module-blocks-header">
+            <div>
+                <h3>
+                    Progresso por módulo
+                </h3>
+
+                <p>
+                    Cada bloco corresponde exatamente a um módulo
+                    do menu lateral. Endereçadas = CO + NC + NA.
+                    Clique em um bloco para abrir o respectivo módulo.
+                </p>
+            </div>
+
+            <div
+                class="regulatory-module-blocks-controls"
+                role="group"
+                aria-label="Modo de exibição"
+            >
+                <button
+                    class="regulatory-module-block-mode"
+                    data-module-block-metric="percentage"
+                    type="button"
+                >
+                    Percentual
+                </button>
+
+                <button
+                    class="regulatory-module-block-mode"
+                    data-module-block-metric="quantity"
+                    type="button"
+                >
+                    Quantidade
+                </button>
+            </div>
+        </div>
+
+        <div
+            id="regulatoryModuleBlocksSummary"
+            class="regulatory-module-blocks-summary"
+        ></div>
+
+        <div class="regulatory-module-vessel">
+            <div
+                id="regulatoryModuleBlocksGrid"
+                class="regulatory-module-blocks-grid"
+            ></div>
+        </div>
+
+        <div class="regulatory-module-blocks-legend">
+            <span class="regulatory-module-legend-item">
+                <i
+                    class="regulatory-module-legend-dot"
+                    style="background:#94a3b8;"
+                ></i>
+                0% ou sem normas
+            </span>
+
+            <span class="regulatory-module-legend-item">
+                <i
+                    class="regulatory-module-legend-dot"
+                    style="background:#ef4444;"
+                ></i>
+                Abaixo de 50%
+            </span>
+
+            <span class="regulatory-module-legend-item">
+                <i
+                    class="regulatory-module-legend-dot"
+                    style="background:#f59e0b;"
+                ></i>
+                50% a 79,9%
+            </span>
+
+            <span class="regulatory-module-legend-item">
+                <i
+                    class="regulatory-module-legend-dot"
+                    style="background:#2563eb;"
+                ></i>
+                80% a 99,9%
+            </span>
+
+            <span class="regulatory-module-legend-item">
+                <i
+                    class="regulatory-module-legend-dot"
+                    style="background:#10b981;"
+                ></i>
+                100%
+            </span>
+        </div>
+    `;
+
+    const statisticsGrid =
+        document.getElementById(
+            "statisticsGrid"
+        );
+
+    if (statisticsGrid) {
+        statisticsGrid.insertAdjacentElement(
+            "afterend",
+            panel
+        );
+    } else {
+        const dashboardPage =
+            document.getElementById(
+                "dashboardPage"
+            );
+
+        dashboardPage?.appendChild(
+            panel
+        );
+    }
+
+    panel.addEventListener(
+        "click",
+        event => {
+            const metricButton =
+                event.target.closest(
+                    "[data-module-block-metric]"
+                );
+
+            if (metricButton) {
+                state.moduleBlockMetric =
+                    metricButton.dataset
+                        .moduleBlockMetric;
+
+                try {
+                    localStorage.setItem(
+                        "regulatoryModuleBlockMetric",
+                        state.moduleBlockMetric
+                    );
+                } catch (error) {
+                    console.warn(error);
+                }
+
+                regulatoryModuleBlocksRender();
+                return;
+            }
+
+            const moduleButton =
+                event.target.closest(
+                    "[data-module-block-sheet]"
+                );
+
+            if (!moduleButton) {
+                return;
+            }
+
+            regulatoryModuleBlockOpen(
+                moduleButton.dataset
+                    .moduleBlockSheet
+            );
+        }
+    );
+
+    return panel;
+}
+
+
+/*
+ * Renderiza os indicadores gerais do painel.
+ */
+function regulatoryModuleBlocksRenderSummary(
+    statistics
+) {
+    const container =
+        document.getElementById(
+            "regulatoryModuleBlocksSummary"
+        );
+
+    if (!container) {
+        return;
+    }
+
+    const totals =
+        statistics.reduce(
+            (
+                result,
+                item
+            ) => {
+                result.total +=
+                    item.total;
+
+                result.addressed +=
+                    item.addressed;
+
+                result.CO +=
+                    item.CO;
+
+                result.NV +=
+                    item.NV;
+
+                return result;
+            },
+            {
+                total: 0,
+                addressed: 0,
+                CO: 0,
+                NV: 0
+            }
+        );
+
+    const percentage =
+        totals.total > 0
+            ? (
+                totals.addressed /
+                totals.total *
+                100
+            )
+            : 0;
+
+    container.innerHTML = `
+        <div class="regulatory-module-summary-card">
+            <span>Módulos do menu</span>
+
+            <strong>
+                ${statistics.length.toLocaleString(
+                    "pt-BR"
+                )}
+            </strong>
+        </div>
+
+        <div class="regulatory-module-summary-card">
+            <span>Total de normas ativas</span>
+
+            <strong>
+                ${totals.total.toLocaleString(
+                    "pt-BR"
+                )}
+            </strong>
+        </div>
+
+        <div class="regulatory-module-summary-card">
+            <span>Normas endereçadas</span>
+
+            <strong style="color:#2563eb;">
+                ${totals.addressed.toLocaleString(
+                    "pt-BR"
+                )}
+            </strong>
+        </div>
+
+        <div class="regulatory-module-summary-card">
+            <span>Percentual endereçado</span>
+
+            <strong style="color:#7c3aed;">
+                ${regulatoryModuleBlockPercent(
+                    percentage
+                )}
+            </strong>
+        </div>
+    `;
+}
+
+
+/*
+ * Renderiza um bloco para cada item do menu lateral.
+ */
+function regulatoryModuleBlocksRenderGrid(
+    statistics
+) {
+    const container =
+        document.getElementById(
+            "regulatoryModuleBlocksGrid"
+        );
+
+    if (!container) {
+        return;
+    }
+
+    if (!statistics.length) {
+        container.innerHTML = `
+            <div
+                style="
+                    grid-column: 1 / -1;
+                    padding: 25px;
+                    color: #64748b;
+                    text-align: center;
+                "
+            >
+                Nenhum módulo foi encontrado no menu lateral.
+            </div>
+        `;
+
+        return;
+    }
+
+    container.innerHTML =
+        statistics.map(item => {
+            const tone =
+                regulatoryModuleBlockTone(
+                    item.percentage,
+                    item.total
+                );
+
+            const progress =
+                Math.max(
+                    0,
+                    Math.min(
+                        100,
+                        item.percentage
+                    )
+                );
+
+            const primaryValue =
+                state.moduleBlockMetric ===
+                    "quantity"
+                    ? (
+                        item.addressed
+                            .toLocaleString(
+                                "pt-BR"
+                            ) +
+                        " / " +
+                        item.total
+                            .toLocaleString(
+                                "pt-BR"
+                            )
+                    )
+                    : regulatoryModuleBlockPercent(
+                        item.percentage
+                    );
+
+            const caption =
+                state.moduleBlockMetric ===
+                    "quantity"
+                    ? "Endereçadas / Total"
+                    : "Normas endereçadas";
+
+            const title = [
+                item.name,
+                (
+                    "Total ativo: " +
+                    item.total
+                ),
+                (
+                    "Endereçadas: " +
+                    item.addressed
+                ),
+                (
+                    "Percentual: " +
+                    regulatoryModuleBlockPercent(
+                        item.percentage
+                    )
+                ),
+                (
+                    "CO: " +
+                    item.CO
+                ),
+                (
+                    "NC: " +
+                    item.NC
+                ),
+                (
+                    "NA: " +
+                    item.NA
+                ),
+                (
+                    "NV: " +
+                    item.NV
+                )
+            ].join("\n");
+
+            return `
+                <button
+                    class="regulatory-module-block"
+                    data-module-block-sheet="${escapeHtml(
+                        item.name
+                    )}"
+                    type="button"
+                    title="${escapeHtml(title)}"
+                    style="
+                        --module-block-progress:
+                            ${progress}%;
+                        --module-block-tone:
+                            ${tone};
+                    "
+                >
+                    <span
+                        class="regulatory-module-block-name"
+                    >
+                        ${escapeHtml(
+                            item.name
+                        )}
+                    </span>
+
+                    <strong
+                        class="regulatory-module-block-value"
+                    >
+                        ${primaryValue}
+                    </strong>
+
+                    <span
+                        class="regulatory-module-block-caption"
+                    >
+                        ${caption}
+                    </span>
+
+                    <small
+                        class="regulatory-module-block-breakdown"
+                    >
+                        CO ${item.CO}
+                        • NC ${item.NC}
+                        • NA ${item.NA}
+                        • NV ${item.NV}
+                    </small>
+
+                    <small
+                        class="regulatory-module-block-total"
+                    >
+                        Total ativo:
+                        ${item.total.toLocaleString(
+                            "pt-BR"
+                        )}
+                    </small>
+                </button>
+            `;
+        }).join("");
+}
+
+
+/*
+ * Atualiza todo o painel.
+ */
+function regulatoryModuleBlocksRender() {
+    regulatoryModuleBlocksEnsurePanel();
+
+    document
+        .querySelectorAll(
+            "[data-module-block-metric]"
+        )
+        .forEach(button => {
+            const active =
+                button.dataset
+                    .moduleBlockMetric ===
+                state.moduleBlockMetric;
+
+            button.classList.toggle(
+                "active",
+                active
+            );
+
+            button.setAttribute(
+                "aria-pressed",
+                active
+                    ? "true"
+                    : "false"
+            );
+        });
+
+    const statistics =
+        regulatoryModuleBlocksStats();
+
+    regulatoryModuleBlocksRenderSummary(
+        statistics
+    );
+
+    regulatoryModuleBlocksRenderGrid(
+        statistics
+    );
+}
+
+
+/*
+ * Abre o módulo através do próprio botão do menu lateral.
+ *
+ * Isso garante que a navegação do bloco tenha exatamente o
+ * mesmo comportamento da navegação lateral.
+ */
+function regulatoryModuleBlockOpen(
+    sheetName
+) {
+    const sidebarButton =
+        [
+            ...document.querySelectorAll(
+                (
+                    ".application > .navigation " +
+                    "[data-monthly-sheet]"
+                )
+            )
+        ].find(
+            button =>
+                String(
+                    button.dataset
+                        .monthlySheet ||
+                    ""
+                ).trim() ===
+                sheetName
+        );
+
+    if (sidebarButton) {
+        sidebarButton.click();
+        return;
+    }
+
+    /*
+     * Alternativa caso o botão do menu ainda não esteja disponível.
+     */
+    state.filters.sheet =
+        sheetName;
+
+    state.filters.module =
+        "";
+
+    state.filters.status =
+        "CO";
+
+    state.currentPage =
+        1;
+
+    if (elements.statusFilter) {
+        elements.statusFilter.value =
+            "CO";
+    }
+
+    openPage(
+        "regulationsPage"
+    );
+
+    const heading =
+        document.querySelector(
+            "#regulationsPage .page-heading h2"
+        );
+
+    if (heading) {
+        heading.textContent =
+            sheetName;
+    }
+
+    renderRegulationTable();
+
+    if (
+        typeof syncMonthlySidebar ===
+        "function"
+    ) {
+        syncMonthlySidebar();
+    }
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+
+/*
+ * Atualiza os blocos junto com o restante da aplicação.
+ */
+const regulatoryModuleBlocksPreviousRenderAll =
+    renderAll;
+
+renderAll =
+    function(...argumentsList) {
+        const result =
+            regulatoryModuleBlocksPreviousRenderAll
+                .apply(
+                    this,
+                    argumentsList
+                );
+
+        regulatoryModuleBlocksRender();
+
+        return result;
+    };
+
+
+/*
+ * Atualiza novamente após o menu lateral ser reconstruído.
+ */
+const regulatoryModuleBlocksPreviousRenderModuleFilters =
+    renderModuleFilters;
+
+renderModuleFilters =
+    function(...argumentsList) {
+        const result =
+            regulatoryModuleBlocksPreviousRenderModuleFilters
+                .apply(
+                    this,
+                    argumentsList
+                );
+
+        window.setTimeout(
+            regulatoryModuleBlocksRender,
+            0
+        );
+
+        return result;
+    };
+
+
+/*
+ * Se o usuário voltar ao Dashboard, atualiza os blocos.
+ */
+document.addEventListener(
+    "click",
+    event => {
+        const dashboardButton =
+            event.target.closest(
+                (
+                    '.nav-button[' +
+                    'data-page="dashboardPage"' +
+                    "]"
+                )
+            );
+
+        if (!dashboardButton) {
+            return;
+        }
+
+        window.setTimeout(
+            regulatoryModuleBlocksRender,
+            50
+        );
+    },
+    true
+);
+
+
+/*
+ * Restaura a preferência de visualização.
+ */
+try {
+    const storedMetric =
+        localStorage.getItem(
+            "regulatoryModuleBlockMetric"
+        );
+
+    if (
+        storedMetric === "percentage" ||
+        storedMetric === "quantity"
+    ) {
+        state.moduleBlockMetric =
+            storedMetric;
+    }
+} catch (error) {
+    console.warn(error);
+}
+
+
+/*
+ * Instala a estrutura inicial.
+ * Ela será atualizada novamente após o carregamento do Firebase.
+ */
+regulatoryModuleBlocksRender();
+
+/* REGULATORY_DYNAMIC_MODULE_BLOCKS_END */
+
 initializeApplication();
     </script>
 </body>
