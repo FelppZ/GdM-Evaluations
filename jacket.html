@@ -1,0 +1,3851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Jacket size registration form for the FPSO Gato do Mato project."
+    >
+
+    <title>FPSO Gato do Mato | Jacket Size Registration</title>
+
+    <style>
+        :root {
+            color-scheme: dark;
+
+            --background: #000000;
+            --surface: #090909;
+            --surface-light: #111111;
+            --border: rgba(255, 255, 255, 0.12);
+            --border-hover: rgba(255, 255, 255, 0.30);
+            --text: #ffffff;
+            --muted: #8e8e93;
+            --success: #35d07f;
+            --error: #ff5c6c;
+            --warning: #ffd36c;
+            --selected: rgba(53, 208, 127, 0.13);
+            --selected-border: rgba(53, 208, 127, 0.65);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            min-width: 320px;
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: var(--text);
+            background:
+                radial-gradient(
+                    circle at 50% -10%,
+                    rgba(255, 255, 255, 0.08),
+                    transparent 36%
+                ),
+                var(--background);
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+        }
+
+        body.modal-open {
+            overflow: hidden;
+        }
+
+        body::before {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            content: "";
+            opacity: 0.16;
+            pointer-events: none;
+            background-image:
+                linear-gradient(
+                    rgba(255, 255, 255, 0.025) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(255, 255, 255, 0.025) 1px,
+                    transparent 1px
+                );
+            background-size: 52px 52px;
+            mask-image:
+                linear-gradient(
+                    to bottom,
+                    black,
+                    transparent 80%
+                );
+        }
+
+        button,
+        input,
+        select {
+            font: inherit;
+        }
+
+        button {
+            border: 0;
+        }
+
+        /* =====================================================
+           INTRO ANIMATION
+        ===================================================== */
+
+        .intro-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 5000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background:
+                radial-gradient(
+                    circle at 50% 43%,
+                    rgba(255, 255, 255, 0.09),
+                    transparent 33%
+                ),
+                #000000;
+            animation:
+                introScreenExit 0.75s 3.1s cubic-bezier(
+                    0.76,
+                    0,
+                    0.24,
+                    1
+                ) forwards;
+        }
+
+        .intro-screen::before {
+            position: absolute;
+            inset: 0;
+            content: "";
+            opacity: 0;
+            background:
+                linear-gradient(
+                    120deg,
+                    transparent 30%,
+                    rgba(255, 255, 255, 0.08) 50%,
+                    transparent 70%
+                );
+            transform: translateX(-100%);
+            animation:
+                introLightSweep 1.2s 1.3s ease forwards;
+        }
+
+        .intro-screen::after {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 460px;
+            height: 460px;
+            content: "";
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(255, 255, 255, 0.08),
+                    transparent 68%
+                );
+            border-radius: 50%;
+            opacity: 0;
+            filter: blur(20px);
+            transform: translate(-50%, -50%) scale(0.55);
+            animation:
+                introGlow 2.2s 0.3s ease forwards;
+        }
+
+        .intro-content {
+            position: relative;
+            z-index: 2;
+            width: min(760px, calc(100% - 40px));
+            text-align: center;
+        }
+
+        .intro-brands {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 26px;
+            margin-bottom: 34px;
+        }
+
+        .intro-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            filter: blur(8px);
+        }
+
+        .intro-logo.modec {
+            width: 230px;
+            height: 105px;
+            animation:
+                introModec 0.85s 0.2s cubic-bezier(
+                    0.16,
+                    1,
+                    0.3,
+                    1
+                ) forwards;
+        }
+
+        .intro-logo.shell {
+            width: 110px;
+            height: 95px;
+            animation:
+                introShell 0.85s 0.48s cubic-bezier(
+                    0.16,
+                    1,
+                    0.3,
+                    1
+                ) forwards;
+        }
+
+        .intro-logo img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .intro-divider {
+            width: 1px;
+            height: 0;
+            background:
+                linear-gradient(
+                    transparent,
+                    rgba(255, 255, 255, 0.65),
+                    transparent
+                );
+            animation:
+                introDivider 0.65s 0.9s ease forwards;
+        }
+
+        .intro-kicker {
+            margin: 0 0 13px;
+            color: #88888e;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+            opacity: 0;
+            transform: translateY(12px);
+            animation:
+                introTextUp 0.7s 1.15s ease forwards;
+        }
+
+        .intro-title {
+            margin: 0;
+            color: #ffffff;
+            font-size: clamp(36px, 7vw, 72px);
+            font-weight: 750;
+            letter-spacing: -0.055em;
+            line-height: 0.98;
+            opacity: 0;
+            filter: blur(10px);
+            transform: translateY(25px) scale(0.97);
+            animation:
+                introTitle 0.95s 1.35s cubic-bezier(
+                    0.16,
+                    1,
+                    0.3,
+                    1
+                ) forwards;
+        }
+
+        .intro-line {
+            width: 0;
+            height: 1px;
+            margin: 25px auto 0;
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.75),
+                    transparent
+                );
+            animation:
+                introLine 0.8s 1.9s ease forwards;
+        }
+
+        @keyframes introModec {
+            from {
+                opacity: 0;
+                filter: blur(8px);
+                transform:
+                    translateX(-45px)
+                    scale(0.88);
+            }
+
+            to {
+                opacity: 1;
+                filter: blur(0);
+                transform:
+                    translateX(0)
+                    scale(1);
+            }
+        }
+
+        @keyframes introShell {
+            from {
+                opacity: 0;
+                filter: blur(8px);
+                transform:
+                    translateX(45px)
+                    scale(0.88)
+                    rotate(8deg);
+            }
+
+            to {
+                opacity: 1;
+                filter: blur(0);
+                transform:
+                    translateX(0)
+                    scale(1)
+                    rotate(0);
+            }
+        }
+
+        @keyframes introDivider {
+            from {
+                height: 0;
+                opacity: 0;
+            }
+
+            to {
+                height: 48px;
+                opacity: 1;
+            }
+        }
+
+        @keyframes introTextUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes introTitle {
+            to {
+                opacity: 1;
+                filter: blur(0);
+                transform:
+                    translateY(0)
+                    scale(1);
+            }
+        }
+
+        @keyframes introLine {
+            to {
+                width: min(480px, 72vw);
+            }
+        }
+
+        @keyframes introGlow {
+            0% {
+                opacity: 0;
+                transform:
+                    translate(-50%, -50%)
+                    scale(0.55);
+            }
+
+            55% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.45;
+                transform:
+                    translate(-50%, -50%)
+                    scale(1.2);
+            }
+        }
+
+        @keyframes introLightSweep {
+            0% {
+                opacity: 0;
+                transform: translateX(-100%);
+            }
+
+            25% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+
+        @keyframes introScreenExit {
+            0% {
+                visibility: visible;
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            100% {
+                visibility: hidden;
+                opacity: 0;
+                transform: scale(1.06);
+                pointer-events: none;
+            }
+        }
+
+        /* =====================================================
+           FIXED HEADER
+        ===================================================== */
+
+        .compact-header {
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            z-index: 1000;
+            visibility: hidden;
+            background: rgba(0, 0, 0, 0.88);
+            border-bottom:
+                1px solid rgba(255, 255, 255, 0.10);
+            box-shadow:
+                0 15px 45px rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(20px);
+            opacity: 0;
+            transform: translateY(-100%);
+            transition:
+                opacity 0.32s ease,
+                transform 0.32s ease,
+                visibility 0.32s ease;
+        }
+
+        .compact-header.visible {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .compact-header-inner {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+            max-width: 1080px;
+            min-height: 74px;
+            margin: 0 auto;
+            padding: 10px 20px;
+        }
+
+        .compact-brands {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .compact-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 42px;
+        }
+
+        .compact-logo.modec {
+            width: 88px;
+        }
+
+        .compact-logo.shell {
+            width: 42px;
+        }
+
+        .compact-logo img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .compact-separator {
+            width: 1px;
+            height: 25px;
+            background:
+                linear-gradient(
+                    transparent,
+                    rgba(255, 255, 255, 0.3),
+                    transparent
+                );
+        }
+
+        .compact-title {
+            min-width: 0;
+            margin: 0;
+            overflow: hidden;
+            font-size: 15px;
+            font-weight: 750;
+            letter-spacing: -0.02em;
+            text-align: center;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .compact-action {
+            padding: 9px 12px;
+            color: #000000;
+            background: #ffffff;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .compact-action:hover {
+            box-shadow:
+                0 10px 25px rgba(255, 255, 255, 0.14);
+            transform: translateY(-2px);
+        }
+
+        /* =====================================================
+           MAIN PAGE AND HERO
+        ===================================================== */
+
+        .page {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1080px;
+        }
+
+        .hero {
+            margin-bottom: 34px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 22px;
+            margin-bottom: 36px;
+            opacity: 0;
+            animation:
+                heroBrandsIn 1s 3.35s cubic-bezier(
+                    0.16,
+                    1,
+                    0.3,
+                    1
+                ) forwards;
+        }
+
+        .logo-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 176px;
+            height: 86px;
+            padding: 14px 18px;
+            overflow: hidden;
+            border-radius: 18px;
+            transition:
+                transform 0.35s ease,
+                filter 0.35s ease;
+        }
+
+        .logo-box:hover {
+            filter: brightness(1.12);
+            transform: translateY(-5px);
+        }
+
+        .logo-box img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .logo-box.shell {
+            width: 104px;
+        }
+
+        .separator {
+            width: 1px;
+            height: 38px;
+            background:
+                linear-gradient(
+                    transparent,
+                    rgba(255, 255, 255, 0.35),
+                    transparent
+                );
+        }
+
+        .page-header {
+            text-align: center;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            margin-bottom: 18px;
+            padding: 7px 12px;
+            color: #b7b7b7;
+            background: rgba(255, 255, 255, 0.035);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            opacity: 0;
+            animation:
+                heroElementIn 0.75s 3.55s ease forwards;
+        }
+
+        .eyebrow-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--success);
+            border-radius: 50%;
+            box-shadow: 0 0 14px var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(34px, 7vw, 62px);
+            font-weight: 700;
+            letter-spacing: -0.055em;
+            line-height: 0.98;
+        }
+
+        .main-title {
+            opacity: 0;
+            filter: blur(7px);
+            transform:
+                translateY(25px)
+                scale(0.98);
+            animation:
+                heroTitleIn 1s 3.65s cubic-bezier(
+                    0.16,
+                    1,
+                    0.3,
+                    1
+                ) forwards;
+        }
+
+        .subtitle {
+            max-width: 640px;
+            margin: 18px auto 0;
+            color: var(--muted);
+            font-size: 15px;
+            line-height: 1.65;
+            opacity: 0;
+            animation:
+                heroElementIn 0.8s 3.9s ease forwards;
+        }
+
+        @keyframes heroBrandsIn {
+            from {
+                opacity: 0;
+                filter: blur(6px);
+                transform:
+                    translateY(-22px)
+                    scale(0.94);
+            }
+
+            to {
+                opacity: 1;
+                filter: blur(0);
+                transform:
+                    translateY(0)
+                    scale(1);
+            }
+        }
+
+        @keyframes heroTitleIn {
+            to {
+                opacity: 1;
+                filter: blur(0);
+                transform:
+                    translateY(0)
+                    scale(1);
+            }
+        }
+
+        @keyframes heroElementIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* =====================================================
+           JACKET PREVIEW
+        ===================================================== */
+
+        .jacket-preview {
+            position: relative;
+            margin: 0 0 30px;
+            overflow: hidden;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255, 255, 255, 0.045),
+                    rgba(255, 255, 255, 0.012)
+                );
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            box-shadow:
+                0 30px 100px rgba(0, 0, 0, 0.65);
+            opacity: 0;
+            animation:
+                contentFadeUp 0.9s 4.05s ease forwards;
+        }
+
+        .jacket-preview-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 18px 22px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .jacket-preview-title {
+            margin: 0;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 750;
+            letter-spacing: -0.01em;
+        }
+
+        .jacket-preview-description {
+            margin: 5px 0 0;
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .jacket-preview-badge {
+            flex: 0 0 auto;
+            padding: 7px 10px;
+            color: #bcbcc1;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .jacket-preview-button {
+            position: relative;
+            display: block;
+            width: 100%;
+            padding: 0;
+            overflow: hidden;
+            color: #ffffff;
+            background: #eeeeee;
+            border: 0;
+            border-radius: 0;
+            cursor: zoom-in;
+            text-align: initial;
+        }
+
+        .jacket-preview-button::after {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            content: "";
+            pointer-events: none;
+            background:
+                linear-gradient(
+                    to bottom,
+                    transparent 65%,
+                    rgba(0, 0, 0, 0.18)
+                );
+        }
+
+        .jacket-preview-button:focus-visible {
+            outline: 3px solid #ffffff;
+            outline-offset: -3px;
+        }
+
+        .jacket-preview-image {
+            display: block;
+            width: 100%;
+            height: auto;
+            min-height: 260px;
+            object-fit: cover;
+            object-position: center;
+            transition:
+                transform 0.65s ease,
+                filter 0.65s ease;
+        }
+
+        .jacket-preview-button:hover
+        .jacket-preview-image {
+            filter: contrast(1.04);
+            transform: scale(1.025);
+        }
+
+        .zoom-hint {
+            position: absolute;
+            right: 18px;
+            bottom: 16px;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 12px;
+            color: #ffffff;
+            background: rgba(0, 0, 0, 0.72);
+            border:
+                1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 999px;
+            backdrop-filter: blur(10px);
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            pointer-events: none;
+            transition: transform 0.25s ease;
+        }
+
+        .zoom-hint svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .jacket-preview-button:hover
+        .zoom-hint {
+            transform: translateY(-3px);
+        }
+
+        .jacket-preview-caption {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 13px 18px;
+            color: #6f6f74;
+            border-top: 1px solid var(--border);
+            font-size: 10px;
+            line-height: 1.5;
+        }
+
+        .jacket-preview-caption strong {
+            color: #a7a7ad;
+            font-weight: 700;
+        }
+
+        /* =====================================================
+           FORM
+        ===================================================== */
+
+        .form-card {
+            position: relative;
+            padding: 32px;
+            overflow: hidden;
+            scroll-margin-top: 96px;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255, 255, 255, 0.045),
+                    rgba(255, 255, 255, 0.012)
+                );
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            box-shadow:
+                0 30px 100px rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(18px);
+            opacity: 0;
+            animation:
+                contentFadeUp 0.9s 4.2s ease forwards;
+        }
+
+        .form-card::before {
+            position: absolute;
+            top: -130px;
+            left: 50%;
+            width: 360px;
+            height: 220px;
+            content: "";
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 50%;
+            filter: blur(70px);
+            pointer-events: none;
+            transform: translateX(-50%);
+        }
+
+        .form-grid {
+            position: relative;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .field {
+            min-width: 0;
+        }
+
+        .field.full {
+            grid-column: 1 / -1;
+        }
+
+        .field label {
+            display: block;
+            margin: 0 0 9px 2px;
+            color: #c8c8c8;
+            font-size: 12px;
+            font-weight: 650;
+            letter-spacing: 0.025em;
+        }
+
+        .required {
+            color: #ffffff;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .field-icon {
+            position: absolute;
+            top: 50%;
+            left: 15px;
+            width: 18px;
+            height: 18px;
+            color: #6f6f74;
+            pointer-events: none;
+            transform: translateY(-50%);
+            transition: color 0.25s ease;
+        }
+
+        input:not([type="hidden"]):not([type="checkbox"]),
+        select {
+            width: 100%;
+            height: 52px;
+            padding: 0 46px;
+            color: var(--text);
+            background: rgba(0, 0, 0, 0.56);
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            outline: none;
+            transition:
+                border-color 0.25s ease,
+                background 0.25s ease,
+                box-shadow 0.25s ease,
+                transform 0.25s ease;
+        }
+
+        select {
+            padding-right: 44px;
+            cursor: pointer;
+            appearance: none;
+        }
+
+        input::placeholder {
+            color: #55555a;
+        }
+
+        input:hover,
+        select:hover {
+            border-color: var(--border-hover);
+        }
+
+        input:focus,
+        select:focus {
+            background: #050505;
+            border-color: rgba(255, 255, 255, 0.7);
+            box-shadow:
+                0 0 0 4px rgba(255, 255, 255, 0.07);
+            transform: translateY(-1px);
+        }
+
+        input:focus + .field-icon,
+        select:focus + .field-icon {
+            color: #ffffff;
+        }
+
+        input.invalid,
+        select.invalid {
+            border-color: var(--error);
+            box-shadow:
+                0 0 0 4px rgba(255, 92, 108, 0.08);
+        }
+
+        .select-arrow {
+            position: absolute;
+            top: 50%;
+            right: 16px;
+            width: 8px;
+            height: 8px;
+            border-right: 1.5px solid #74747a;
+            border-bottom: 1.5px solid #74747a;
+            pointer-events: none;
+            transform:
+                translateY(-70%)
+                rotate(45deg);
+        }
+
+        .field-note {
+            margin: 9px 0 0 2px;
+            color: #68686e;
+            font-size: 11px;
+            line-height: 1.45;
+        }
+
+        .field-note.error {
+            color: var(--error);
+        }
+
+        /* Size summary */
+
+        .size-summary {
+            display: none;
+            grid-template-columns:
+                minmax(100px, 0.8fr)
+                repeat(4, minmax(100px, 1fr));
+            grid-column: 1 / -1;
+            gap: 1px;
+            overflow: hidden;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+        }
+
+        .size-summary.visible {
+            display: grid;
+            animation: statusIn 0.35s ease;
+        }
+
+        .summary-item {
+            min-width: 0;
+            padding: 14px;
+            background: #090909;
+        }
+
+        .summary-item.primary {
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(53, 208, 127, 0.18),
+                    rgba(53, 208, 127, 0.07)
+                ),
+                #090909;
+        }
+
+        .summary-label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--muted);
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .summary-value {
+            display: block;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 750;
+        }
+
+        .summary-item.primary
+        .summary-value {
+            color: #8df0b8;
+            font-size: 21px;
+        }
+
+        /* Size chart */
+
+        .size-chart-section {
+            grid-column: 1 / -1;
+            overflow: hidden;
+            max-height: 0;
+            margin-top: -20px;
+            visibility: hidden;
+            opacity: 0;
+            transform: translateY(-8px);
+            transition:
+                max-height 0.55s ease,
+                margin-top 0.4s ease,
+                opacity 0.35s ease,
+                transform 0.35s ease,
+                visibility 0.35s ease;
+        }
+
+        .size-chart-section.visible {
+            max-height: 800px;
+            margin-top: 0;
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .size-chart-card {
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid var(--border);
+            border-radius: 17px;
+        }
+
+        .size-chart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 16px 18px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .size-chart-title {
+            margin: 0;
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 750;
+        }
+
+        .size-chart-description {
+            margin: 5px 0 0;
+            color: var(--muted);
+            font-size: 10px;
+            line-height: 1.5;
+        }
+
+        .size-chart-close {
+            flex: 0 0 auto;
+            padding: 8px 11px;
+            color: #bcbcc1;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            cursor: pointer;
+            font-size: 9px;
+            font-weight: 750;
+            text-transform: uppercase;
+        }
+
+        .size-chart-close:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.09);
+            border-color: var(--border-hover);
+        }
+
+        .size-chart-scroll {
+            overflow-x: auto;
+            overscroll-behavior-inline: contain;
+            scrollbar-color: #48484f #111111;
+            scrollbar-width: thin;
+        }
+
+        .size-chart-scroll::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .size-chart-scroll::-webkit-scrollbar-track {
+            background: #111111;
+        }
+
+        .size-chart-scroll::-webkit-scrollbar-thumb {
+            background: #48484f;
+            border-radius: 999px;
+        }
+
+        .size-table {
+            width: 100%;
+            min-width: 1160px;
+            border-collapse: separate;
+            border-spacing: 0;
+            table-layout: fixed;
+        }
+
+        .size-table th,
+        .size-table td {
+            height: 58px;
+            padding: 10px 8px;
+            color: #bdbdc3;
+            background: rgba(8, 8, 8, 0.78);
+            border-right:
+                1px solid rgba(255, 255, 255, 0.08);
+            border-bottom:
+                1px solid rgba(255, 255, 255, 0.08);
+            font-size: 11px;
+            line-height: 1.35;
+            text-align: center;
+            transition:
+                color 0.25s ease,
+                background 0.25s ease,
+                box-shadow 0.25s ease;
+        }
+
+        .size-table thead th {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            height: 52px;
+            color: #ffffff;
+            background: #101010;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .size-table th:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 3;
+            width: 205px;
+            padding-left: 14px;
+            color: #ffffff;
+            background: #101010;
+            font-weight: 700;
+            text-align: left;
+        }
+
+        .size-table thead th:first-child {
+            z-index: 4;
+        }
+
+        .size-table th:not(:first-child),
+        .size-table td {
+            width: 78px;
+        }
+
+        .size-table .selected-column {
+            color: #a3f4c6;
+            background: var(--selected);
+            box-shadow:
+                inset 1px 0 0 var(--selected-border),
+                inset -1px 0 0 var(--selected-border);
+        }
+
+        .size-table thead
+        .selected-column {
+            color: #000000;
+            background: var(--success);
+        }
+
+        .chart-note {
+            margin: 0;
+            padding: 12px 16px;
+            color: #696970;
+            border-top: 1px solid var(--border);
+            font-size: 9px;
+            line-height: 1.5;
+        }
+
+        /* Confirmation */
+
+        .confirmation {
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+            gap: 11px;
+            grid-column: 1 / -1;
+            margin-top: 2px;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.025);
+            border:
+                1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 13px;
+            cursor: pointer;
+        }
+
+        .confirmation input {
+            flex: 0 0 auto;
+            width: 18px;
+            height: 18px;
+            margin: 1px 0 0;
+            accent-color: #ffffff;
+        }
+
+        .confirmation-text {
+            color: #8d8d92;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        /* Submit */
+
+        .submit-button {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            grid-column: 1 / -1;
+            width: 100%;
+            min-height: 54px;
+            margin-top: 4px;
+            padding: 14px 22px;
+            overflow: hidden;
+            color: #000000;
+            background: #ffffff;
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            transition:
+                transform 0.25s ease,
+                box-shadow 0.25s ease,
+                opacity 0.25s ease;
+        }
+
+        .submit-button::before {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 55%;
+            height: 100%;
+            content: "";
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(0, 0, 0, 0.12),
+                    transparent
+                );
+            transform: skewX(-20deg);
+            transition: left 0.6s ease;
+        }
+
+        .submit-button:hover {
+            box-shadow:
+                0 16px 40px rgba(255, 255, 255, 0.16);
+            transform: translateY(-2px);
+        }
+
+        .submit-button:hover::before {
+            left: 150%;
+        }
+
+        .submit-button:disabled {
+            cursor: not-allowed;
+            opacity: 0.55;
+            transform: none;
+        }
+
+        .button-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .button-arrow {
+            width: 17px;
+            height: 17px;
+            transition: transform 0.25s ease;
+        }
+
+        .submit-button:hover
+        .button-arrow {
+            transform: translateX(4px);
+        }
+
+        .loader {
+            display: none;
+            width: 19px;
+            height: 19px;
+            border:
+                2px solid rgba(0, 0, 0, 0.25);
+            border-top-color: #000000;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        .submit-button.loading
+        .button-content {
+            display: none;
+        }
+
+        .submit-button.loading
+        .loader {
+            display: block;
+        }
+
+        /* Status */
+
+        .status {
+            display: none;
+            grid-column: 1 / -1;
+            padding: 13px 15px;
+            border-radius: 12px;
+            font-size: 12px;
+            line-height: 1.5;
+            animation: statusIn 0.35s ease;
+        }
+
+        .status.success {
+            display: block;
+            color: #98eabb;
+            background: rgba(53, 208, 127, 0.08);
+            border:
+                1px solid rgba(53, 208, 127, 0.3);
+        }
+
+        .status.error {
+            display: block;
+            color: #ffacb5;
+            background: rgba(255, 92, 108, 0.08);
+            border:
+                1px solid rgba(255, 92, 108, 0.3);
+        }
+
+        .status.warning {
+            display: block;
+            color: var(--warning);
+            background: rgba(255, 211, 108, 0.08);
+            border:
+                1px solid rgba(255, 211, 108, 0.28);
+        }
+
+        /* Footer */
+
+        .footer {
+            margin-top: 26px;
+            color: #4f4f54;
+            font-size: 10px;
+            letter-spacing: 0.08em;
+            line-height: 1.6;
+            text-align: center;
+            text-transform: uppercase;
+            opacity: 0;
+            animation:
+                contentFadeUp 0.8s 4.35s ease forwards;
+        }
+
+        /* =====================================================
+           MODALS
+        ===================================================== */
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 22px;
+            visibility: hidden;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(15px);
+            opacity: 0;
+            transition:
+                opacity 0.3s ease,
+                visibility 0.3s ease;
+        }
+
+        .modal.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Image modal */
+
+        .image-modal-content {
+            position: relative;
+            width: min(1500px, 96vw);
+            max-height: 94vh;
+            overflow: hidden;
+            background: #080808;
+            border:
+                1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 20px;
+            box-shadow:
+                0 40px 120px rgba(0, 0, 0, 0.9);
+            opacity: 0;
+            transform:
+                scale(0.94)
+                translateY(12px);
+            transition:
+                opacity 0.3s ease,
+                transform 0.3s ease;
+        }
+
+        .modal.active
+        .image-modal-content {
+            opacity: 1;
+            transform:
+                scale(1)
+                translateY(0);
+        }
+
+        .enlarged-image {
+            display: block;
+            width: 100%;
+            height: auto;
+            max-height: calc(94vh - 55px);
+            object-fit: contain;
+            background: #eeeeee;
+        }
+
+        .image-modal-footer {
+            min-height: 55px;
+            padding: 17px 70px;
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.5;
+            text-align: center;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 13px;
+            right: 13px;
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            padding: 0 0 4px;
+            color: #ffffff;
+            background: rgba(0, 0, 0, 0.75);
+            border:
+                1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 50%;
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+            font-size: 29px;
+            line-height: 1;
+            transition:
+                background 0.2s ease,
+                transform 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: rotate(8deg);
+        }
+
+        .modal-close:focus-visible {
+            outline: 2px solid #ffffff;
+            outline-offset: 3px;
+        }
+
+        /* Success modal */
+
+        .success-modal-content {
+            width: 100%;
+            max-width: 420px;
+            padding: 40px 30px;
+            background: #080808;
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            box-shadow:
+                0 40px 120px rgba(0, 0, 0, 0.9);
+            text-align: center;
+            opacity: 0;
+            transform:
+                translateY(18px)
+                scale(0.97);
+            transition:
+                opacity 0.35s ease,
+                transform 0.35s ease;
+        }
+
+        .modal.active
+        .success-modal-content {
+            opacity: 1;
+            transform:
+                translateY(0)
+                scale(1);
+        }
+
+        .success-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 22px;
+            color: #000000;
+            background: #ffffff;
+            border-radius: 50%;
+            box-shadow:
+                0 0 45px rgba(255, 255, 255, 0.18);
+        }
+
+        .success-icon svg {
+            width: 29px;
+            height: 29px;
+        }
+
+        .success-modal-content h2 {
+            margin: 0;
+            font-size: 26px;
+            letter-spacing: -0.035em;
+        }
+
+        .success-modal-content p {
+            margin: 13px 0 25px;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .success-modal-content button {
+            width: 100%;
+            padding: 13px;
+            color: #000000;
+            background: #ffffff;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        /* =====================================================
+           GENERAL ANIMATIONS
+        ===================================================== */
+
+        @keyframes contentFadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.55;
+                transform: scale(0.75);
+            }
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes statusIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 820px) {
+            .size-summary {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .summary-item.primary {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 620px) {
+            .intro-brands {
+                gap: 15px;
+            }
+
+            .intro-logo.modec {
+                width: 155px;
+                height: 76px;
+            }
+
+            .intro-logo.shell {
+                width: 72px;
+                height: 68px;
+            }
+
+            .intro-title {
+                font-size: 39px;
+            }
+
+            .compact-header-inner {
+                grid-template-columns: auto 1fr;
+                gap: 12px;
+                min-height: 66px;
+                padding: 8px 14px;
+            }
+
+            .compact-action {
+                display: none;
+            }
+
+            .compact-logo.modec {
+                width: 68px;
+            }
+
+            .compact-logo.shell {
+                width: 34px;
+            }
+
+            .compact-title {
+                font-size: 12px;
+                text-align: right;
+            }
+
+            .page {
+                padding: 28px 14px;
+            }
+
+            .brand {
+                gap: 12px;
+                margin-bottom: 30px;
+            }
+
+            .logo-box {
+                width: 145px;
+                height: 72px;
+                padding: 12px;
+            }
+
+            .logo-box.shell {
+                width: 82px;
+            }
+
+            .separator {
+                height: 30px;
+            }
+
+            h1 {
+                font-size: 40px;
+            }
+
+            .subtitle {
+                font-size: 14px;
+            }
+
+            .jacket-preview,
+            .form-card {
+                border-radius: 21px;
+            }
+
+            .jacket-preview {
+                margin-bottom: 22px;
+            }
+
+            .jacket-preview-header {
+                align-items: flex-start;
+                padding: 15px 16px;
+            }
+
+            .jacket-preview-image {
+                min-height: 190px;
+            }
+
+            .jacket-preview-caption {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 4px;
+                padding: 12px 15px;
+            }
+
+            .zoom-hint {
+                right: 12px;
+                bottom: 12px;
+            }
+
+            .form-card {
+                padding: 22px 17px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 17px;
+            }
+
+            .field.full,
+            .confirmation,
+            .submit-button,
+            .status,
+            .size-summary,
+            .size-chart-section {
+                grid-column: auto;
+            }
+
+            .size-summary {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .summary-item.primary {
+                grid-column: 1 / -1;
+            }
+
+            .size-chart-header {
+                align-items: flex-start;
+                padding: 14px;
+            }
+
+            .size-table {
+                min-width: 1090px;
+            }
+
+            .size-table th:first-child {
+                width: 180px;
+            }
+
+            .modal {
+                padding: 10px;
+            }
+
+            .image-modal-content {
+                width: 100%;
+                border-radius: 15px;
+            }
+
+            .enlarged-image {
+                max-height: calc(92vh - 70px);
+            }
+
+            .image-modal-footer {
+                padding: 15px 55px 15px 15px;
+                text-align: left;
+            }
+
+            .modal-close {
+                top: 10px;
+                right: 10px;
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .size-summary {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-item.primary {
+                grid-column: auto;
+            }
+
+            .jacket-preview-badge {
+                display: none;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .intro-screen {
+                display: none;
+            }
+
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                animation-duration: 0.01ms !important;
+                animation-delay: 0ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- =========================================================
+     INTRO ANIMATION
+========================================================= -->
+
+<div
+    class="intro-screen"
+    aria-hidden="true"
+>
+    <div class="intro-content">
+
+        <div class="intro-brands">
+
+            <div class="intro-logo modec">
+                <img
+                    src="https://i0.wp.com/gcci.gy/wp-content/uploads/2025/01/logo-MODEC-1-Faneeza-Karim.png?ssl=1"
+                    alt=""
+                    referrerpolicy="no-referrer"
+                >
+            </div>
+
+            <div class="intro-divider"></div>
+
+            <div class="intro-logo shell">
+                <img
+                    src="https://1000logos.net/wp-content/uploads/2017/06/Shell-Logo.png"
+                    alt=""
+                    referrerpolicy="no-referrer"
+                >
+            </div>
+
+        </div>
+
+        <p class="intro-kicker">
+            Jacket Registration
+        </p>
+
+        <h2 class="intro-title">
+            FPSO Gato do Mato
+        </h2>
+
+        <div class="intro-line"></div>
+
+    </div>
+</div>
+
+<!-- =========================================================
+     FIXED HEADER
+========================================================= -->
+
+<header
+    id="compactHeader"
+    class="compact-header"
+    aria-hidden="true"
+>
+    <div class="compact-header-inner">
+
+        <div class="compact-brands">
+
+            <div class="compact-logo modec">
+                <img
+                    src="https://i0.wp.com/gcci.gy/wp-content/uploads/2025/01/logo-MODEC-1-Faneeza-Karim.png?ssl=1"
+                    alt="MODEC"
+                    referrerpolicy="no-referrer"
+                >
+            </div>
+
+            <span class="compact-separator"></span>
+
+            <div class="compact-logo shell">
+                <img
+                    src="https://1000logos.net/wp-content/uploads/2017/06/Shell-Logo.png"
+                    alt="Shell"
+                    referrerpolicy="no-referrer"
+                >
+            </div>
+
+        </div>
+
+        <p class="compact-title">
+            FPSO Gato do Mato Jackets
+        </p>
+
+        <button
+            id="compactFormButton"
+            class="compact-action"
+            type="button"
+        >
+            Registration Form
+        </button>
+
+    </div>
+</header>
+
+<!-- =========================================================
+     MAIN CONTENT
+========================================================= -->
+
+<main class="page">
+
+    <div class="container">
+
+        <!-- Hero -->
+
+        <div id="hero" class="hero">
+
+            <div class="brand">
+
+                <div class="logo-box">
+                    <img
+                        src="https://i0.wp.com/gcci.gy/wp-content/uploads/2025/01/logo-MODEC-1-Faneeza-Karim.png?ssl=1"
+                        alt="MODEC"
+                        referrerpolicy="no-referrer"
+                    >
+                </div>
+
+                <div class="separator"></div>
+
+                <div class="logo-box shell">
+                    <img
+                        src="https://1000logos.net/wp-content/uploads/2017/06/Shell-Logo.png"
+                        alt="Shell"
+                        referrerpolicy="no-referrer"
+                    >
+                </div>
+
+            </div>
+
+            <header class="page-header">
+
+                <div class="eyebrow">
+                    <span class="eyebrow-dot"></span>
+                    Jacket Registration
+                </div>
+
+                <h1 class="main-title">
+                    FPSO Gato do Mato Jackets
+                </h1>
+
+                <p class="subtitle">
+                    Enter your information and select your jacket size.
+                    Please review all details before submitting the form.
+                    Only one registration is permitted per corporate email.
+                </p>
+
+            </header>
+
+        </div>
+
+        <!-- Jacket image -->
+
+        <figure
+            class="jacket-preview"
+            aria-labelledby="jacketPreviewTitle"
+        >
+
+            <div class="jacket-preview-header">
+
+                <div>
+                    <h2
+                        id="jacketPreviewTitle"
+                        class="jacket-preview-title"
+                    >
+                        FPSO Gato do Mato Jacket
+                    </h2>
+
+                    <p class="jacket-preview-description">
+                        Front, side and back views of the project jacket.
+                    </p>
+                </div>
+
+                <span class="jacket-preview-badge">
+                    Jacket Preview
+                </span>
+
+            </div>
+
+            <button
+                id="openJacketImage"
+                class="jacket-preview-button"
+                type="button"
+                aria-label="Enlarge jacket image"
+            >
+
+                <img
+                    class="jacket-preview-image"
+                    src="./assets/images/jacket-preview.jpg"
+                    alt="FPSO Gato do Mato black jacket shown from the front, angled, back and side views"
+                    loading="eager"
+                    decoding="async"
+                >
+
+                <span
+                    class="zoom-hint"
+                    aria-hidden="true"
+                >
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+                        <circle
+                            cx="11"
+                            cy="11"
+                            r="7"
+                        ></circle>
+
+                        <path d="m20 20-4-4"></path>
+                        <path d="M11 8v6"></path>
+                        <path d="M8 11h6"></path>
+                    </svg>
+
+                    Click to enlarge
+                </span>
+
+            </button>
+
+            <figcaption class="jacket-preview-caption">
+
+                <span>
+                    <strong>Reference image:</strong>
+                    actual appearance may vary slightly.
+                </span>
+
+                <span>
+                    Review the design before selecting your size.
+                </span>
+
+            </figcaption>
+
+        </figure>
+
+        <!-- Registration form -->
+
+        <section
+            id="registrationForm"
+            class="form-card"
+        >
+
+            <form id="jacketForm" novalidate>
+
+                <input
+                    type="hidden"
+                    name="project"
+                    value="FPSO Gato do Mato"
+                >
+
+                <input
+                    type="hidden"
+                    name="request_type"
+                    value="Jacket size registration"
+                >
+
+                <input
+                    type="hidden"
+                    name="_subject"
+                    value="FPSO Gato do Mato - Jacket Size Registration"
+                >
+
+                <div class="form-grid">
+
+                    <!-- Name -->
+
+                    <div class="field full">
+
+                        <label for="name">
+                            Requester Name
+                            <span class="required">*</span>
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <input
+                                id="name"
+                                name="requester_name"
+                                type="text"
+                                placeholder="Enter your full name"
+                                autocomplete="name"
+                                maxlength="120"
+                                required
+                            >
+
+                            <svg
+                                class="field-icon"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                                aria-hidden="true"
+                            >
+                                <circle
+                                    cx="12"
+                                    cy="8"
+                                    r="4"
+                                ></circle>
+
+                                <path d="M4 21a8 8 0 0 1 16 0"></path>
+                            </svg>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Email -->
+
+                    <div class="field full">
+
+                        <label for="email">
+                            Corporate Email
+                            <span class="required">*</span>
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <input
+                                id="email"
+                                name="email"
+                                type="email"
+                                placeholder="name@company.com"
+                                autocomplete="email"
+                                maxlength="160"
+                                required
+                            >
+
+                            <svg
+                                class="field-icon"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                                aria-hidden="true"
+                            >
+                                <rect
+                                    x="3"
+                                    y="5"
+                                    width="18"
+                                    height="14"
+                                    rx="2"
+                                ></rect>
+
+                                <path d="m3 7 9 6 9-6"></path>
+                            </svg>
+
+                        </div>
+
+                        <p
+                            id="emailNote"
+                            class="field-note"
+                        >
+                            Only one registration is allowed per corporate email.
+                        </p>
+
+                    </div>
+
+                    <!-- Department -->
+
+                    <div class="field">
+
+                        <label for="department">
+                            Department
+                            <span class="required">*</span>
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <select
+                                id="department"
+                                name="department"
+                                required
+                            >
+                                <option
+                                    value=""
+                                    selected
+                                    disabled
+                                >
+                                    Select a department
+                                </option>
+
+                                <option value="Engineering">
+                                    Engineering
+                                </option>
+
+                                <option value="Project Management">
+                                    Project Management
+                                </option>
+
+                                <option value="Construction">
+                                    Construction
+                                </option>
+
+                                <option value="Commissioning">
+                                    Commissioning
+                                </option>
+
+                                <option value="Operations">
+                                    Operations
+                                </option>
+
+                                <option value="Maintenance">
+                                    Maintenance
+                                </option>
+
+                                <option value="Marine">
+                                    Marine
+                                </option>
+
+                                <option value="HSEQ">
+                                    HSEQ
+                                </option>
+
+                                <option value="Supply Chain">
+                                    Supply Chain
+                                </option>
+
+                                <option value="Finance">
+                                    Finance
+                                </option>
+
+                                <option value="Human Resources">
+                                    Human Resources
+                                </option>
+
+                                <option value="IT">
+                                    IT
+                                </option>
+
+                                <option value="Other">
+                                    Other
+                                </option>
+                            </select>
+
+                            <svg
+                                class="field-icon"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                                aria-hidden="true"
+                            >
+                                <path d="M3 21h18"></path>
+                                <path d="M5 21V7l7-4 7 4v14"></path>
+                                <path d="M9 10h1"></path>
+                                <path d="M14 10h1"></path>
+                                <path d="M9 14h1"></path>
+                                <path d="M14 14h1"></path>
+                            </svg>
+
+                            <span class="select-arrow"></span>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Size -->
+
+                    <div class="field">
+
+                        <label for="size">
+                            Jacket Size
+                            <span class="required">*</span>
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <select
+                                id="size"
+                                name="jacket_size"
+                                required
+                            >
+                                <option
+                                    value=""
+                                    selected
+                                    disabled
+                                >
+                                    Select a size
+                                </option>
+
+                                <option value="XS">XS</option>
+                                <option value="S">S</option>
+                                <option value="M">M</option>
+                                <option value="L">L</option>
+                                <option value="XL">XL</option>
+                                <option value="2XL">2XL</option>
+                                <option value="3XL">3XL</option>
+                                <option value="4XL">4XL</option>
+                                <option value="5XL">5XL</option>
+                                <option value="6XL">6XL</option>
+                                <option value="7XL">7XL</option>
+                                <option value="8XL">8XL</option>
+                            </select>
+
+                            <svg
+                                class="field-icon"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                                aria-hidden="true"
+                            >
+                                <path
+                                    d="M8 4 4 7l3 4 2-1v10h6V10l2 1 3-4-4-3a6 6 0 0 1-8 0Z"
+                                ></path>
+                            </svg>
+
+                            <span class="select-arrow"></span>
+
+                        </div>
+
+                        <p class="field-note">
+                            Select this field to open the measurement chart.
+                        </p>
+
+                    </div>
+
+                    <!-- Size summary -->
+
+                    <div
+                        id="sizeSummary"
+                        class="size-summary"
+                        aria-live="polite"
+                    >
+
+                        <div class="summary-item primary">
+                            <span class="summary-label">
+                                Selected size
+                            </span>
+
+                            <span
+                                id="summarySize"
+                                class="summary-value"
+                            >
+                                —
+                            </span>
+                        </div>
+
+                        <div class="summary-item">
+                            <span class="summary-label">
+                                Back length
+                            </span>
+
+                            <span
+                                id="summaryBackLength"
+                                class="summary-value"
+                            >
+                                —
+                            </span>
+                        </div>
+
+                        <div class="summary-item">
+                            <span class="summary-label">
+                                Chest
+                            </span>
+
+                            <span
+                                id="summaryChest"
+                                class="summary-value"
+                            >
+                                —
+                            </span>
+                        </div>
+
+                        <div class="summary-item">
+                            <span class="summary-label">
+                                Hem
+                            </span>
+
+                            <span
+                                id="summaryHem"
+                                class="summary-value"
+                            >
+                                —
+                            </span>
+                        </div>
+
+                        <div class="summary-item">
+                            <span class="summary-label">
+                                Sleeve length
+                            </span>
+
+                            <span
+                                id="summarySleeve"
+                                class="summary-value"
+                            >
+                                —
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <!-- Size chart -->
+
+                    <div
+                        id="sizeChartSection"
+                        class="size-chart-section"
+                    >
+
+                        <div class="size-chart-card">
+
+                            <div class="size-chart-header">
+
+                                <div>
+                                    <h2 class="size-chart-title">
+                                        Jacket Size Chart
+                                    </h2>
+
+                                    <p class="size-chart-description">
+                                        All measurements are shown in centimeters.
+                                    </p>
+                                </div>
+
+                                <button
+                                    id="closeSizeChart"
+                                    class="size-chart-close"
+                                    type="button"
+                                >
+                                    Close
+                                </button>
+
+                            </div>
+
+                            <div
+                                id="sizeChartScroll"
+                                class="size-chart-scroll"
+                            >
+
+                                <table
+                                    id="sizeTable"
+                                    class="size-table"
+                                >
+                                    <thead id="sizeTableHead"></thead>
+                                    <tbody id="sizeTableBody"></tbody>
+                                </table>
+
+                            </div>
+
+                            <p class="chart-note">
+                                Measurements refer to the finished garment.
+                                Use this chart as a reference before confirming
+                                your selection.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Confirmation -->
+
+                    <label class="confirmation">
+
+                        <input
+                            id="confirmation"
+                            name="confirmation"
+                            type="checkbox"
+                            value="Confirmed"
+                            required
+                        >
+
+                        <span class="confirmation-text">
+                            I confirm that I have reviewed the information
+                            and that the selected jacket size is correct.
+                        </span>
+
+                    </label>
+
+                    <!-- Status -->
+
+                    <div
+                        id="status"
+                        class="status"
+                        role="alert"
+                        aria-live="polite"
+                    ></div>
+
+                    <!-- Submit -->
+
+                    <button
+                        id="submitButton"
+                        class="submit-button"
+                        type="submit"
+                    >
+
+                        <span class="button-content">
+                            Confirm Jacket Size
+
+                            <svg
+                                class="button-arrow"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                aria-hidden="true"
+                            >
+                                <path d="M5 12h14"></path>
+                                <path d="m13 6 6 6-6 6"></path>
+                            </svg>
+                        </span>
+
+                        <span class="loader"></span>
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+        <footer class="footer">
+            FPSO Gato do Mato · Jacket Size Registration
+        </footer>
+
+    </div>
+
+</main>
+
+<!-- =========================================================
+     ENLARGED IMAGE MODAL
+========================================================= -->
+
+<div
+    id="jacketImageModal"
+    class="modal"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Enlarged jacket image"
+    aria-hidden="true"
+>
+
+    <div class="image-modal-content">
+
+        <button
+            id="closeJacketImage"
+            class="modal-close"
+            type="button"
+            aria-label="Close enlarged image"
+        >
+            &times;
+        </button>
+
+        <img
+            class="enlarged-image"
+            src="./assets/images/jacket-preview.jpg"
+            alt="Enlarged view of the FPSO Gato do Mato jacket"
+        >
+
+        <div class="image-modal-footer">
+            FPSO Gato do Mato Jacket — front, angled,
+            back and side views
+        </div>
+
+    </div>
+
+</div>
+
+<!-- =========================================================
+     SUCCESS MODAL
+========================================================= -->
+
+<div
+    id="successModal"
+    class="modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="successTitle"
+    aria-hidden="true"
+>
+
+    <div class="success-modal-content">
+
+        <div class="success-icon">
+
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                aria-hidden="true"
+            >
+                <path d="m5 12 4 4L19 6"></path>
+            </svg>
+
+        </div>
+
+        <h2 id="successTitle">
+            Registration Completed
+        </h2>
+
+        <p id="successMessage">
+            Your jacket size has been successfully registered.
+        </p>
+
+        <button
+            id="closeSuccessModal"
+            type="button"
+        >
+            Finish
+        </button>
+
+    </div>
+
+</div>
+
+<script>
+    /*
+     * Formspree configuration.
+     */
+    const FORM_ENDPOINT =
+        "https://formspree.io/f/xrppdvgy";
+
+    /*
+     * Local duplicate protection.
+     *
+     * This prevents repeated registration with the same
+     * email in the same browser.
+     */
+    const STORAGE_KEY =
+        "fpsogdm_jacket_registrations_v1";
+
+    /*
+     * Size chart data.
+     */
+    const sizes = [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL",
+        "2XL",
+        "3XL",
+        "4XL",
+        "5XL",
+        "6XL",
+        "7XL",
+        "8XL"
+    ];
+
+    const measurementRows = [
+        {
+            key: "backLength",
+            label: "Center Back Length",
+            values: [
+                65.5, 67.5, 69.5, 71.5,
+                73.5, 75.5, 77.5, 79.5,
+                81.5, 83.5, 83.5, 83.5
+            ]
+        },
+        {
+            key: "chest",
+            label: "Chest Circumference",
+            values: [
+                100, 104, 108, 112,
+                116, 120, 124, 128,
+                132, 136, 140, 144
+            ]
+        },
+        {
+            key: "hem",
+            label: "Hem",
+            values: [
+                94, 98, 102, 106,
+                110, 114, 118, 122,
+                126, 130, 134, 138
+            ]
+        },
+        {
+            key: "sleeve",
+            label: "Sleeve Length",
+            values: [
+                64, 66.5, 69, 71.5,
+                74, 76.5, 79, 81.5,
+                84, 86.5, 89, 91.5
+            ]
+        },
+        {
+            key: "zipper",
+            label: "Zipper Length at Placket",
+            values: [
+                62, 64, 66, 68,
+                70, 72, 74, 76,
+                78, 80, 80, 80
+            ]
+        },
+        {
+            key: "chestPocket",
+            label: "Chest Pocket Zipper Opening",
+            values: [
+                14, 14, 14, 14,
+                15, 15, 15, 15,
+                15, 15, 15, 15
+            ]
+        },
+        {
+            key: "lowerPocket",
+            label: "Lower Pocket Zipper Opening",
+            values: [
+                18, 18, 18, 18,
+                19, 19, 19, 19,
+                19, 19, 19, 19
+            ]
+        }
+    ];
+
+    const measurementsBySize = {};
+
+    sizes.forEach((size, sizeIndex) => {
+        measurementsBySize[size] = {};
+
+        measurementRows.forEach(row => {
+            measurementsBySize[size][row.key] =
+                row.values[sizeIndex];
+        });
+    });
+
+    /*
+     * Elements.
+     */
+    const hero =
+        document.getElementById("hero");
+
+    const compactHeader =
+        document.getElementById("compactHeader");
+
+    const compactFormButton =
+        document.getElementById("compactFormButton");
+
+    const registrationForm =
+        document.getElementById("registrationForm");
+
+    const form =
+        document.getElementById("jacketForm");
+
+    const nameInput =
+        document.getElementById("name");
+
+    const emailInput =
+        document.getElementById("email");
+
+    const emailNote =
+        document.getElementById("emailNote");
+
+    const departmentSelect =
+        document.getElementById("department");
+
+    const sizeSelect =
+        document.getElementById("size");
+
+    const confirmationInput =
+        document.getElementById("confirmation");
+
+    const submitButton =
+        document.getElementById("submitButton");
+
+    const statusElement =
+        document.getElementById("status");
+
+    const sizeSummary =
+        document.getElementById("sizeSummary");
+
+    const summarySize =
+        document.getElementById("summarySize");
+
+    const summaryBackLength =
+        document.getElementById("summaryBackLength");
+
+    const summaryChest =
+        document.getElementById("summaryChest");
+
+    const summaryHem =
+        document.getElementById("summaryHem");
+
+    const summarySleeve =
+        document.getElementById("summarySleeve");
+
+    const sizeChartSection =
+        document.getElementById("sizeChartSection");
+
+    const sizeChartScroll =
+        document.getElementById("sizeChartScroll");
+
+    const closeSizeChartButton =
+        document.getElementById("closeSizeChart");
+
+    const sizeTableHead =
+        document.getElementById("sizeTableHead");
+
+    const sizeTableBody =
+        document.getElementById("sizeTableBody");
+
+    const openJacketImageButton =
+        document.getElementById("openJacketImage");
+
+    const jacketImageModal =
+        document.getElementById("jacketImageModal");
+
+    const closeJacketImageButton =
+        document.getElementById("closeJacketImage");
+
+    const successModal =
+        document.getElementById("successModal");
+
+    const closeSuccessModalButton =
+        document.getElementById("closeSuccessModal");
+
+    const successMessage =
+        document.getElementById("successMessage");
+
+    const requiredFields = [
+        nameInput,
+        emailInput,
+        departmentSelect,
+        sizeSelect,
+        confirmationInput
+    ];
+
+    let isSubmitting = false;
+    let duplicateEmailDetected = false;
+    let previousImageFocus = null;
+
+    /*
+     * Fixed header.
+     */
+    function setCompactHeaderVisibility(visible) {
+        compactHeader.classList.toggle(
+            "visible",
+            visible
+        );
+
+        compactHeader.setAttribute(
+            "aria-hidden",
+            visible ? "false" : "true"
+        );
+    }
+
+    if ("IntersectionObserver" in window) {
+        const heroObserver =
+            new IntersectionObserver(
+                entries => {
+                    setCompactHeaderVisibility(
+                        !entries[0].isIntersecting
+                    );
+                },
+                {
+                    threshold: 0
+                }
+            );
+
+        heroObserver.observe(hero);
+
+    } else {
+        window.addEventListener(
+            "scroll",
+            () => {
+                const rectangle =
+                    hero.getBoundingClientRect();
+
+                setCompactHeaderVisibility(
+                    rectangle.bottom <= 0
+                );
+            },
+            {
+                passive: true
+            }
+        );
+    }
+
+    compactFormButton.addEventListener(
+        "click",
+        () => {
+            registrationForm.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        }
+    );
+
+    /*
+     * Modal body lock.
+     */
+    function updateBodyLock() {
+        const anyModalOpen =
+            jacketImageModal.classList.contains(
+                "active"
+            ) ||
+            successModal.classList.contains(
+                "active"
+            );
+
+        document.body.classList.toggle(
+            "modal-open",
+            anyModalOpen
+        );
+    }
+
+    /*
+     * Jacket image modal.
+     */
+    function openJacketImageModal() {
+        previousImageFocus =
+            document.activeElement;
+
+        jacketImageModal.classList.add(
+            "active"
+        );
+
+        jacketImageModal.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+
+        updateBodyLock();
+
+        closeJacketImageButton.focus();
+    }
+
+    function closeJacketImageModal() {
+        jacketImageModal.classList.remove(
+            "active"
+        );
+
+        jacketImageModal.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+        updateBodyLock();
+
+        if (
+            previousImageFocus &&
+            typeof previousImageFocus.focus ===
+                "function"
+        ) {
+            previousImageFocus.focus();
+        }
+    }
+
+    openJacketImageButton.addEventListener(
+        "click",
+        openJacketImageModal
+    );
+
+    closeJacketImageButton.addEventListener(
+        "click",
+        closeJacketImageModal
+    );
+
+    jacketImageModal.addEventListener(
+        "click",
+        event => {
+            if (
+                event.target ===
+                jacketImageModal
+            ) {
+                closeJacketImageModal();
+            }
+        }
+    );
+
+    /*
+     * Build size table.
+     */
+    function buildSizeTable() {
+        const headerRow =
+            document.createElement("tr");
+
+        const measurementHeader =
+            document.createElement("th");
+
+        measurementHeader.scope = "col";
+
+        measurementHeader.textContent =
+            "Measurement";
+
+        headerRow.appendChild(
+            measurementHeader
+        );
+
+        sizes.forEach(size => {
+            const cell =
+                document.createElement("th");
+
+            cell.scope = "col";
+            cell.textContent = size;
+            cell.dataset.size = size;
+
+            headerRow.appendChild(cell);
+        });
+
+        sizeTableHead.appendChild(
+            headerRow
+        );
+
+        measurementRows.forEach(row => {
+            const tableRow =
+                document.createElement("tr");
+
+            const rowHeader =
+                document.createElement("th");
+
+            rowHeader.scope = "row";
+            rowHeader.textContent = row.label;
+
+            tableRow.appendChild(
+                rowHeader
+            );
+
+            row.values.forEach(
+                (value, index) => {
+                    const cell =
+                        document.createElement("td");
+
+                    cell.textContent = value;
+                    cell.dataset.size =
+                        sizes[index];
+
+                    tableRow.appendChild(cell);
+                }
+            );
+
+            sizeTableBody.appendChild(
+                tableRow
+            );
+        });
+    }
+
+    buildSizeTable();
+
+    /*
+     * Size chart.
+     */
+    function openSizeChart() {
+        sizeChartSection.classList.add(
+            "visible"
+        );
+    }
+
+    function closeSizeChart() {
+        sizeChartSection.classList.remove(
+            "visible"
+        );
+    }
+
+    function clearSelectedSize() {
+        document
+            .querySelectorAll(
+                "#sizeTable .selected-column"
+            )
+            .forEach(cell => {
+                cell.classList.remove(
+                    "selected-column"
+                );
+            });
+    }
+
+    function updateSelectedSize(size) {
+        clearSelectedSize();
+
+        document
+            .querySelectorAll(
+                `#sizeTable [data-size="${size}"]`
+            )
+            .forEach(cell => {
+                cell.classList.add(
+                    "selected-column"
+                );
+            });
+
+        const measurements =
+            measurementsBySize[size];
+
+        if (!measurements) {
+            sizeSummary.classList.remove(
+                "visible"
+            );
+
+            return;
+        }
+
+        summarySize.textContent = size;
+
+        summaryBackLength.textContent =
+            `${measurements.backLength} cm`;
+
+        summaryChest.textContent =
+            `${measurements.chest} cm`;
+
+        summaryHem.textContent =
+            `${measurements.hem} cm`;
+
+        summarySleeve.textContent =
+            `${measurements.sleeve} cm`;
+
+        sizeSummary.classList.add(
+            "visible"
+        );
+
+        const selectedHeader =
+            document.querySelector(
+                `#sizeTable thead ` +
+                `[data-size="${size}"]`
+            );
+
+        if (selectedHeader) {
+            window.requestAnimationFrame(() => {
+                const left =
+                    selectedHeader.offsetLeft -
+                    sizeChartScroll.clientWidth / 2 +
+                    selectedHeader.offsetWidth / 2;
+
+                sizeChartScroll.scrollTo({
+                    left: Math.max(0, left),
+                    behavior: "smooth"
+                });
+            });
+        }
+    }
+
+    sizeSelect.addEventListener(
+        "focus",
+        openSizeChart
+    );
+
+    sizeSelect.addEventListener(
+        "click",
+        openSizeChart
+    );
+
+    sizeSelect.addEventListener(
+        "change",
+        () => {
+            openSizeChart();
+            updateSelectedSize(
+                sizeSelect.value
+            );
+        }
+    );
+
+    closeSizeChartButton.addEventListener(
+        "click",
+        closeSizeChart
+    );
+
+    /*
+     * Form status.
+     */
+    function showStatus(message, type) {
+        statusElement.textContent = message;
+
+        statusElement.className =
+            `status ${type}`;
+    }
+
+    function clearStatus() {
+        statusElement.textContent = "";
+        statusElement.className = "status";
+    }
+
+    function setLoading(loading) {
+        isSubmitting = loading;
+
+        submitButton.disabled =
+            loading ||
+            duplicateEmailDetected;
+
+        submitButton.classList.toggle(
+            "loading",
+            loading
+        );
+    }
+
+    /*
+     * Local duplicate protection.
+     */
+    function normalizeEmail(email) {
+        return String(email || "")
+            .trim()
+            .toLowerCase();
+    }
+
+    async function createEmailFingerprint(email) {
+        const normalizedEmail =
+            normalizeEmail(email);
+
+        if (
+            window.crypto &&
+            window.crypto.subtle
+        ) {
+            const encodedEmail =
+                new TextEncoder().encode(
+                    normalizedEmail
+                );
+
+            const digest =
+                await window.crypto.subtle.digest(
+                    "SHA-256",
+                    encodedEmail
+                );
+
+            return Array
+                .from(new Uint8Array(digest))
+                .map(value =>
+                    value
+                        .toString(16)
+                        .padStart(2, "0")
+                )
+                .join("");
+        }
+
+        let hash = 2166136261;
+
+        for (
+            let index = 0;
+            index < normalizedEmail.length;
+            index++
+        ) {
+            hash ^=
+                normalizedEmail.charCodeAt(
+                    index
+                );
+
+            hash = Math.imul(
+                hash,
+                16777619
+            );
+        }
+
+        return `fallback-${(
+            hash >>> 0
+        ).toString(16)}`;
+    }
+
+    function readRegistrationRecords() {
+        try {
+            const savedRecords =
+                localStorage.getItem(
+                    STORAGE_KEY
+                );
+
+            if (!savedRecords) {
+                return [];
+            }
+
+            const records =
+                JSON.parse(savedRecords);
+
+            return Array.isArray(records)
+                ? records
+                : [];
+
+        } catch (error) {
+            console.warn(
+                "Unable to read local registration records.",
+                error
+            );
+
+            return [];
+        }
+    }
+
+    function saveRegistrationRecords(records) {
+        try {
+            localStorage.setItem(
+                STORAGE_KEY,
+                JSON.stringify(records)
+            );
+        } catch (error) {
+            console.warn(
+                "Unable to save local registration record.",
+                error
+            );
+        }
+    }
+
+    async function hasExistingRegistration(email) {
+        const fingerprint =
+            await createEmailFingerprint(
+                email
+            );
+
+        const records =
+            readRegistrationRecords();
+
+        return records.includes(
+            fingerprint
+        );
+    }
+
+    async function saveCompletedRegistration(email) {
+        const fingerprint =
+            await createEmailFingerprint(
+                email
+            );
+
+        const records =
+            readRegistrationRecords();
+
+        if (!records.includes(fingerprint)) {
+            records.push(fingerprint);
+
+            saveRegistrationRecords(
+                records
+            );
+        }
+    }
+
+    async function checkDuplicateEmail() {
+        const email =
+            normalizeEmail(
+                emailInput.value
+            );
+
+        if (
+            !email ||
+            !emailInput.checkValidity()
+        ) {
+            duplicateEmailDetected = false;
+
+            emailInput.classList.remove(
+                "invalid"
+            );
+
+            emailNote.classList.remove(
+                "error"
+            );
+
+            emailNote.textContent =
+                "Only one registration is allowed per corporate email.";
+
+            submitButton.disabled =
+                isSubmitting;
+
+            return false;
+        }
+
+        const duplicate =
+            await hasExistingRegistration(
+                email
+            );
+
+        duplicateEmailDetected =
+            duplicate;
+
+        emailInput.classList.toggle(
+            "invalid",
+            duplicate
+        );
+
+        emailNote.classList.toggle(
+            "error",
+            duplicate
+        );
+
+        submitButton.disabled =
+            isSubmitting ||
+            duplicate;
+
+        if (duplicate) {
+            emailNote.textContent =
+                "A registration has already been submitted for this email on this browser.";
+
+            showStatus(
+                "This corporate email already has a jacket size registration.",
+                "error"
+            );
+        } else {
+            emailNote.textContent =
+                "Only one registration is allowed per corporate email.";
+        }
+
+        return duplicate;
+    }
+
+    emailInput.addEventListener(
+        "blur",
+        checkDuplicateEmail
+    );
+
+    emailInput.addEventListener(
+        "change",
+        checkDuplicateEmail
+    );
+
+    emailInput.addEventListener(
+        "input",
+        () => {
+            duplicateEmailDetected = false;
+
+            emailInput.classList.remove(
+                "invalid"
+            );
+
+            emailNote.classList.remove(
+                "error"
+            );
+
+            emailNote.textContent =
+                "Only one registration is allowed per corporate email.";
+
+            submitButton.disabled =
+                isSubmitting;
+        }
+    );
+
+    /*
+     * Validation.
+     */
+    function validateForm() {
+        let valid = true;
+        let firstInvalidField = null;
+
+        requiredFields.forEach(field => {
+            const invalid =
+                !field.checkValidity();
+
+            if (
+                field.type !== "checkbox"
+            ) {
+                field.classList.toggle(
+                    "invalid",
+                    invalid
+                );
+            }
+
+            if (
+                invalid &&
+                !firstInvalidField
+            ) {
+                firstInvalidField = field;
+            }
+
+            if (invalid) {
+                valid = false;
+            }
+        });
+
+        if (
+            !valid &&
+            firstInvalidField
+        ) {
+            firstInvalidField.focus();
+
+            showStatus(
+                "Please complete all required fields correctly.",
+                "error"
+            );
+        }
+
+        return valid;
+    }
+
+    requiredFields.forEach(field => {
+        const eventName =
+            field.tagName === "SELECT" ||
+            field.type === "checkbox"
+                ? "change"
+                : "input";
+
+        field.addEventListener(
+            eventName,
+            () => {
+                if (
+                    field !== emailInput
+                ) {
+                    field.classList.remove(
+                        "invalid"
+                    );
+                }
+
+                if (
+                    form.checkValidity() &&
+                    !duplicateEmailDetected
+                ) {
+                    clearStatus();
+                }
+            }
+        );
+    });
+
+    /*
+     * Form submission.
+     */
+    form.addEventListener(
+        "submit",
+        async event => {
+            event.preventDefault();
+
+            if (isSubmitting) {
+                return;
+            }
+
+            clearStatus();
+
+            if (!validateForm()) {
+                return;
+            }
+
+            const normalizedEmail =
+                normalizeEmail(
+                    emailInput.value
+                );
+
+            const duplicate =
+                await hasExistingRegistration(
+                    normalizedEmail
+                );
+
+            if (duplicate) {
+                duplicateEmailDetected = true;
+
+                emailInput.classList.add(
+                    "invalid"
+                );
+
+                emailNote.classList.add(
+                    "error"
+                );
+
+                emailNote.textContent =
+                    "A registration has already been submitted for this email on this browser.";
+
+                showStatus(
+                    "This corporate email already has a jacket size registration.",
+                    "error"
+                );
+
+                emailInput.focus();
+                submitButton.disabled = true;
+
+                return;
+            }
+
+            setLoading(true);
+
+            try {
+                const selectedSize =
+                    sizeSelect.value;
+
+                const measurements =
+                    measurementsBySize[
+                        selectedSize
+                    ];
+
+                const formData =
+                    new FormData(form);
+
+                if (measurements) {
+                    formData.append(
+                        "center_back_length_cm",
+                        measurements.backLength
+                    );
+
+                    formData.append(
+                        "chest_circumference_cm",
+                        measurements.chest
+                    );
+
+                    formData.append(
+                        "hem_cm",
+                        measurements.hem
+                    );
+
+                    formData.append(
+                        "sleeve_length_cm",
+                        measurements.sleeve
+                    );
+
+                    formData.append(
+                        "zipper_length_at_placket_cm",
+                        measurements.zipper
+                    );
+
+                    formData.append(
+                        "chest_pocket_zipper_opening_cm",
+                        measurements.chestPocket
+                    );
+
+                    formData.append(
+                        "lower_pocket_zipper_opening_cm",
+                        measurements.lowerPocket
+                    );
+                }
+
+                const requesterName =
+                    nameInput.value.trim();
+
+                const response = await fetch(
+                    FORM_ENDPOINT,
+                    {
+                        method: "POST",
+
+                        headers: {
+                            Accept:
+                                "application/json"
+                        },
+
+                        body: formData
+                    }
+                );
+
+                if (!response.ok) {
+                    let message =
+                        "The form could not be submitted.";
+
+                    try {
+                        const responseData =
+                            await response.json();
+
+                        if (
+                            responseData.errors?.length
+                        ) {
+                            message =
+                                responseData.errors
+                                    .map(error =>
+                                        error.message
+                                    )
+                                    .join(" ");
+                        }
+                    } catch {
+                        /*
+                         * Keep the default message.
+                         */
+                    }
+
+                    throw new Error(message);
+                }
+
+                await saveCompletedRegistration(
+                    normalizedEmail
+                );
+
+                successMessage.textContent =
+                    `${requesterName}, jacket size ${selectedSize} ` +
+                    "has been successfully registered.";
+
+                successModal.classList.add(
+                    "active"
+                );
+
+                successModal.setAttribute(
+                    "aria-hidden",
+                    "false"
+                );
+
+                updateBodyLock();
+
+                form.reset();
+
+                clearSelectedSize();
+                closeSizeChart();
+
+                sizeSummary.classList.remove(
+                    "visible"
+                );
+
+                duplicateEmailDetected = false;
+
+                emailNote.classList.remove(
+                    "error"
+                );
+
+                emailNote.textContent =
+                    "Only one registration is allowed per corporate email.";
+
+                clearStatus();
+
+                closeSuccessModalButton.focus();
+
+            } catch (error) {
+                console.error(error);
+
+                showStatus(
+                    error.message ||
+                    "An error occurred during submission. Please try again.",
+                    "error"
+                );
+
+            } finally {
+                setLoading(false);
+            }
+        }
+    );
+
+    /*
+     * Success modal.
+     */
+    function closeSuccessModal() {
+        successModal.classList.remove(
+            "active"
+        );
+
+        successModal.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+        updateBodyLock();
+
+        nameInput.focus();
+    }
+
+    closeSuccessModalButton.addEventListener(
+        "click",
+        closeSuccessModal
+    );
+
+    successModal.addEventListener(
+        "click",
+        event => {
+            if (
+                event.target ===
+                successModal
+            ) {
+                closeSuccessModal();
+            }
+        }
+    );
+
+    /*
+     * Escape key.
+     */
+    document.addEventListener(
+        "keydown",
+        event => {
+            if (event.key !== "Escape") {
+                return;
+            }
+
+            if (
+                jacketImageModal.classList.contains(
+                    "active"
+                )
+            ) {
+                closeJacketImageModal();
+                return;
+            }
+
+            if (
+                successModal.classList.contains(
+                    "active"
+                )
+            ) {
+                closeSuccessModal();
+                return;
+            }
+
+            if (
+                sizeChartSection.classList.contains(
+                    "visible"
+                )
+            ) {
+                closeSizeChart();
+            }
+        }
+    );
+</script>
+
+</body>
+</html>
