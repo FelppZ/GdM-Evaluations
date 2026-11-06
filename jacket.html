@@ -13,7 +13,23 @@
         content="Jacket size registration form for the FPSO Gato do Mato project."
     >
 
-    <title>FPSO Gato do Mato | Jacket Size Registration</title>
+    <title>FPSO Gato do Mato | Jacket Registration</title>
+
+    <link
+        rel="preconnect"
+        href="https://login.microsoftonline.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://graph.microsoft.com"
+    >
+
+    <!-- Microsoft Authentication Library -->
+    <script
+        src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js"
+        crossorigin="anonymous"
+    ></script>
 
     <style>
         :root {
@@ -103,7 +119,7 @@
         }
 
         /* =====================================================
-           INTRO ANIMATION
+           INTRO
         ===================================================== */
 
         .intro-screen {
@@ -117,12 +133,12 @@
             background:
                 radial-gradient(
                     circle at 50% 43%,
-                    rgba(255, 255, 255, 0.09),
-                    transparent 33%
+                    rgba(255, 255, 255, 0.10),
+                    transparent 35%
                 ),
                 #000000;
             animation:
-                introScreenExit 0.75s 3.1s cubic-bezier(
+                introExit 0.8s 3.2s cubic-bezier(
                     0.76,
                     0,
                     0.24,
@@ -139,33 +155,12 @@
                 linear-gradient(
                     120deg,
                     transparent 30%,
-                    rgba(255, 255, 255, 0.08) 50%,
+                    rgba(255, 255, 255, 0.09) 50%,
                     transparent 70%
                 );
             transform: translateX(-100%);
             animation:
-                introLightSweep 1.2s 1.3s ease forwards;
-        }
-
-        .intro-screen::after {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 460px;
-            height: 460px;
-            content: "";
-            background:
-                radial-gradient(
-                    circle,
-                    rgba(255, 255, 255, 0.08),
-                    transparent 68%
-                );
-            border-radius: 50%;
-            opacity: 0;
-            filter: blur(20px);
-            transform: translate(-50%, -50%) scale(0.55);
-            animation:
-                introGlow 2.2s 0.3s ease forwards;
+                introSweep 1.2s 1.35s ease forwards;
         }
 
         .intro-content {
@@ -180,7 +175,7 @@
             align-items: center;
             justify-content: center;
             gap: 26px;
-            margin-bottom: 34px;
+            margin-bottom: 32px;
         }
 
         .intro-logo {
@@ -216,7 +211,6 @@
         }
 
         .intro-logo img {
-            display: block;
             width: 100%;
             height: 100%;
             object-fit: contain;
@@ -245,7 +239,7 @@
             opacity: 0;
             transform: translateY(12px);
             animation:
-                introTextUp 0.7s 1.15s ease forwards;
+                introText 0.7s 1.15s ease forwards;
         }
 
         .intro-title {
@@ -257,7 +251,9 @@
             line-height: 0.98;
             opacity: 0;
             filter: blur(10px);
-            transform: translateY(25px) scale(0.97);
+            transform:
+                translateY(25px)
+                scale(0.97);
             animation:
                 introTitle 0.95s 1.35s cubic-bezier(
                     0.16,
@@ -321,18 +317,12 @@
         }
 
         @keyframes introDivider {
-            from {
-                height: 0;
-                opacity: 0;
-            }
-
             to {
                 height: 48px;
-                opacity: 1;
             }
         }
 
-        @keyframes introTextUp {
+        @keyframes introText {
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -355,27 +345,7 @@
             }
         }
 
-        @keyframes introGlow {
-            0% {
-                opacity: 0;
-                transform:
-                    translate(-50%, -50%)
-                    scale(0.55);
-            }
-
-            55% {
-                opacity: 1;
-            }
-
-            100% {
-                opacity: 0.45;
-                transform:
-                    translate(-50%, -50%)
-                    scale(1.2);
-            }
-        }
-
-        @keyframes introLightSweep {
+        @keyframes introSweep {
             0% {
                 opacity: 0;
                 transform: translateX(-100%);
@@ -391,18 +361,12 @@
             }
         }
 
-        @keyframes introScreenExit {
-            0% {
-                visibility: visible;
-                opacity: 1;
-                transform: scale(1);
-            }
-
-            100% {
+        @keyframes introExit {
+            to {
                 visibility: hidden;
                 opacity: 0;
-                transform: scale(1.06);
                 pointer-events: none;
+                transform: scale(1.06);
             }
         }
 
@@ -471,7 +435,6 @@
         }
 
         .compact-logo img {
-            display: block;
             width: 100%;
             height: 100%;
             object-fit: contain;
@@ -494,7 +457,6 @@
             overflow: hidden;
             font-size: 15px;
             font-weight: 750;
-            letter-spacing: -0.02em;
             text-align: center;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -509,19 +471,10 @@
             font-size: 10px;
             font-weight: 800;
             text-transform: uppercase;
-            transition:
-                transform 0.2s ease,
-                box-shadow 0.2s ease;
-        }
-
-        .compact-action:hover {
-            box-shadow:
-                0 10px 25px rgba(255, 255, 255, 0.14);
-            transform: translateY(-2px);
         }
 
         /* =====================================================
-           MAIN PAGE AND HERO
+           PAGE
         ===================================================== */
 
         .page {
@@ -549,12 +502,7 @@
             margin-bottom: 36px;
             opacity: 0;
             animation:
-                heroBrandsIn 1s 3.35s cubic-bezier(
-                    0.16,
-                    1,
-                    0.3,
-                    1
-                ) forwards;
+                contentIn 0.9s 3.45s ease forwards;
         }
 
         .logo-box {
@@ -564,7 +512,6 @@
             width: 176px;
             height: 86px;
             padding: 14px 18px;
-            overflow: hidden;
             border-radius: 18px;
             transition:
                 transform 0.35s ease,
@@ -577,7 +524,6 @@
         }
 
         .logo-box img {
-            display: block;
             width: 100%;
             height: 100%;
             object-fit: contain;
@@ -618,7 +564,7 @@
             text-transform: uppercase;
             opacity: 0;
             animation:
-                heroElementIn 0.75s 3.55s ease forwards;
+                contentIn 0.8s 3.55s ease forwards;
         }
 
         .eyebrow-dot {
@@ -641,75 +587,27 @@
         .main-title {
             opacity: 0;
             filter: blur(7px);
-            transform:
-                translateY(25px)
-                scale(0.98);
+            transform: translateY(24px);
             animation:
-                heroTitleIn 1s 3.65s cubic-bezier(
-                    0.16,
-                    1,
-                    0.3,
-                    1
-                ) forwards;
+                titleIn 1s 3.65s ease forwards;
         }
 
         .subtitle {
-            max-width: 640px;
+            max-width: 650px;
             margin: 18px auto 0;
             color: var(--muted);
             font-size: 15px;
             line-height: 1.65;
             opacity: 0;
             animation:
-                heroElementIn 0.8s 3.9s ease forwards;
-        }
-
-        @keyframes heroBrandsIn {
-            from {
-                opacity: 0;
-                filter: blur(6px);
-                transform:
-                    translateY(-22px)
-                    scale(0.94);
-            }
-
-            to {
-                opacity: 1;
-                filter: blur(0);
-                transform:
-                    translateY(0)
-                    scale(1);
-            }
-        }
-
-        @keyframes heroTitleIn {
-            to {
-                opacity: 1;
-                filter: blur(0);
-                transform:
-                    translateY(0)
-                    scale(1);
-            }
-        }
-
-        @keyframes heroElementIn {
-            from {
-                opacity: 0;
-                transform: translateY(15px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+                contentIn 0.8s 3.85s ease forwards;
         }
 
         /* =====================================================
-           JACKET PREVIEW
+           JACKET IMAGE
         ===================================================== */
 
         .jacket-preview {
-            position: relative;
             margin: 0 0 30px;
             overflow: hidden;
             background:
@@ -724,7 +622,7 @@
                 0 30px 100px rgba(0, 0, 0, 0.65);
             opacity: 0;
             animation:
-                contentFadeUp 0.9s 4.05s ease forwards;
+                contentIn 0.9s 4.05s ease forwards;
         }
 
         .jacket-preview-header {
@@ -738,21 +636,17 @@
 
         .jacket-preview-title {
             margin: 0;
-            color: #ffffff;
             font-size: 14px;
             font-weight: 750;
-            letter-spacing: -0.01em;
         }
 
         .jacket-preview-description {
             margin: 5px 0 0;
             color: var(--muted);
             font-size: 11px;
-            line-height: 1.5;
         }
 
         .jacket-preview-badge {
-            flex: 0 0 auto;
             padding: 7px 10px;
             color: #bcbcc1;
             background: rgba(255, 255, 255, 0.04);
@@ -760,7 +654,6 @@
             border-radius: 999px;
             font-size: 9px;
             font-weight: 800;
-            letter-spacing: 0.12em;
             text-transform: uppercase;
         }
 
@@ -772,10 +665,7 @@
             overflow: hidden;
             color: #ffffff;
             background: #eeeeee;
-            border: 0;
-            border-radius: 0;
             cursor: zoom-in;
-            text-align: initial;
         }
 
         .jacket-preview-button::after {
@@ -790,11 +680,6 @@
                     transparent 65%,
                     rgba(0, 0, 0, 0.18)
                 );
-        }
-
-        .jacket-preview-button:focus-visible {
-            outline: 3px solid #ffffff;
-            outline-offset: -3px;
         }
 
         .jacket-preview-image {
@@ -829,13 +714,9 @@
             border:
                 1px solid rgba(255, 255, 255, 0.18);
             border-radius: 999px;
-            backdrop-filter: blur(10px);
             font-size: 9px;
             font-weight: 800;
-            letter-spacing: 0.05em;
             text-transform: uppercase;
-            pointer-events: none;
-            transition: transform 0.25s ease;
         }
 
         .zoom-hint svg {
@@ -843,26 +724,186 @@
             height: 14px;
         }
 
-        .jacket-preview-button:hover
-        .zoom-hint {
-            transform: translateY(-3px);
-        }
-
         .jacket-preview-caption {
             display: flex;
-            align-items: center;
             justify-content: space-between;
             gap: 16px;
             padding: 13px 18px;
             color: #6f6f74;
             border-top: 1px solid var(--border);
             font-size: 10px;
-            line-height: 1.5;
         }
 
         .jacket-preview-caption strong {
             color: #a7a7ad;
+        }
+
+        /* =====================================================
+           MICROSOFT LOGIN
+        ===================================================== */
+
+        .microsoft-login-card {
+            margin-bottom: 24px;
+            padding: 22px;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255, 255, 255, 0.045),
+                    rgba(255, 255, 255, 0.012)
+                );
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            box-shadow:
+                0 25px 70px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            animation:
+                contentIn 0.9s 4.15s ease forwards;
+        }
+
+        .signed-out-view {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 22px;
+        }
+
+        .signed-out-view[hidden],
+        .microsoft-profile[hidden] {
+            display: none;
+        }
+
+        .login-copy h2 {
+            margin: 0;
+            font-size: 15px;
+        }
+
+        .login-copy p {
+            max-width: 560px;
+            margin: 7px 0 0;
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.55;
+        }
+
+        .microsoft-login-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+            gap: 10px;
+            min-height: 46px;
+            padding: 11px 16px;
+            color: #000000;
+            background: #ffffff;
+            border-radius: 11px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 800;
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .microsoft-login-button:hover {
+            box-shadow:
+                0 13px 30px rgba(255, 255, 255, 0.14);
+            transform: translateY(-2px);
+        }
+
+        .microsoft-login-button:disabled {
+            cursor: wait;
+            opacity: 0.6;
+            transform: none;
+        }
+
+        .microsoft-login-button svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .microsoft-profile {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .microsoft-profile-photo {
+            flex: 0 0 auto;
+            width: 56px;
+            height: 56px;
+            object-fit: cover;
+            background: #181818;
+            border: 1px solid var(--border);
+            border-radius: 50%;
+        }
+
+        .microsoft-profile-details {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .microsoft-profile-label {
+            margin-bottom: 3px;
+            color: var(--success);
+            font-size: 9px;
+            font-weight: 750;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .microsoft-profile-details strong {
+            overflow: hidden;
+            color: #ffffff;
+            font-size: 14px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .microsoft-profile-details span:last-child {
+            margin-top: 3px;
+            overflow: hidden;
+            color: var(--muted);
+            font-size: 11px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .microsoft-logout-button {
+            padding: 9px 12px;
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            cursor: pointer;
+            font-size: 10px;
             font-weight: 700;
+        }
+
+        .microsoft-login-status {
+            display: none;
+            margin-top: 14px;
+            padding: 11px 13px;
+            border-radius: 10px;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .microsoft-login-status.error {
+            display: block;
+            color: #ffacb5;
+            background: rgba(255, 92, 108, 0.08);
+            border:
+                1px solid rgba(255, 92, 108, 0.3);
+        }
+
+        .microsoft-login-status.loading {
+            display: block;
+            color: #c9d8ff;
+            background: rgba(85, 130, 255, 0.08);
+            border:
+                1px solid rgba(85, 130, 255, 0.3);
         }
 
         /* =====================================================
@@ -884,10 +925,9 @@
             border-radius: 28px;
             box-shadow:
                 0 30px 100px rgba(0, 0, 0, 0.65);
-            backdrop-filter: blur(18px);
             opacity: 0;
             animation:
-                contentFadeUp 0.9s 4.2s ease forwards;
+                contentIn 0.9s 4.25s ease forwards;
         }
 
         .form-card::before {
@@ -904,11 +944,40 @@
             transform: translateX(-50%);
         }
 
-        .form-grid {
+        .registration-fields {
             position: relative;
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
+            min-width: 0;
+            margin: 0;
+            padding: 0;
+            border: 0;
+            transition:
+                opacity 0.3s ease,
+                filter 0.3s ease;
+        }
+
+        .registration-fields:disabled {
+            opacity: 0.42;
+            filter: grayscale(0.25);
+        }
+
+        .login-required-message {
+            position: relative;
+            margin: 0 0 20px;
+            padding: 13px 15px;
+            color: #c9d8ff;
+            background: rgba(85, 130, 255, 0.08);
+            border:
+                1px solid rgba(85, 130, 255, 0.26);
+            border-radius: 12px;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .login-required-message.hidden {
+            display: none;
         }
 
         .field {
@@ -925,7 +994,6 @@
             color: #c8c8c8;
             font-size: 12px;
             font-weight: 650;
-            letter-spacing: 0.025em;
         }
 
         .required {
@@ -945,7 +1013,6 @@
             color: #6f6f74;
             pointer-events: none;
             transform: translateY(-50%);
-            transition: color 0.25s ease;
         }
 
         input:not([type="hidden"]):not([type="checkbox"]),
@@ -963,6 +1030,12 @@
                 background 0.25s ease,
                 box-shadow 0.25s ease,
                 transform 0.25s ease;
+        }
+
+        input[readonly] {
+            color: #d7d7dc;
+            background: rgba(255, 255, 255, 0.035);
+            cursor: default;
         }
 
         select {
@@ -983,15 +1056,10 @@
         input:focus,
         select:focus {
             background: #050505;
-            border-color: rgba(255, 255, 255, 0.7);
+            border-color:
+                rgba(255, 255, 255, 0.7);
             box-shadow:
                 0 0 0 4px rgba(255, 255, 255, 0.07);
-            transform: translateY(-1px);
-        }
-
-        input:focus + .field-icon,
-        select:focus + .field-icon {
-            color: #ffffff;
         }
 
         input.invalid,
@@ -1068,7 +1136,6 @@
             color: var(--muted);
             font-size: 9px;
             font-weight: 700;
-            letter-spacing: 0.08em;
             text-transform: uppercase;
         }
 
@@ -1079,8 +1146,7 @@
             font-weight: 750;
         }
 
-        .summary-item.primary
-        .summary-value {
+        .summary-item.primary .summary-value {
             color: #8df0b8;
             font-size: 21px;
         }
@@ -1091,13 +1157,11 @@
             grid-column: 1 / -1;
             overflow: hidden;
             max-height: 0;
-            margin-top: -20px;
             visibility: hidden;
             opacity: 0;
             transform: translateY(-8px);
             transition:
                 max-height 0.55s ease,
-                margin-top 0.4s ease,
                 opacity 0.35s ease,
                 transform 0.35s ease,
                 visibility 0.35s ease;
@@ -1105,7 +1169,6 @@
 
         .size-chart-section.visible {
             max-height: 800px;
-            margin-top: 0;
             visibility: visible;
             opacity: 1;
             transform: translateY(0);
@@ -1129,20 +1192,16 @@
 
         .size-chart-title {
             margin: 0;
-            color: #ffffff;
             font-size: 13px;
-            font-weight: 750;
         }
 
         .size-chart-description {
             margin: 5px 0 0;
             color: var(--muted);
             font-size: 10px;
-            line-height: 1.5;
         }
 
         .size-chart-close {
-            flex: 0 0 auto;
             padding: 8px 11px;
             color: #bcbcc1;
             background: rgba(255, 255, 255, 0.04);
@@ -1154,30 +1213,10 @@
             text-transform: uppercase;
         }
 
-        .size-chart-close:hover {
-            color: #ffffff;
-            background: rgba(255, 255, 255, 0.09);
-            border-color: var(--border-hover);
-        }
-
         .size-chart-scroll {
             overflow-x: auto;
-            overscroll-behavior-inline: contain;
             scrollbar-color: #48484f #111111;
             scrollbar-width: thin;
-        }
-
-        .size-chart-scroll::-webkit-scrollbar {
-            height: 8px;
-        }
-
-        .size-chart-scroll::-webkit-scrollbar-track {
-            background: #111111;
-        }
-
-        .size-chart-scroll::-webkit-scrollbar-thumb {
-            background: #48484f;
-            border-radius: 999px;
         }
 
         .size-table {
@@ -1199,23 +1238,16 @@
             border-bottom:
                 1px solid rgba(255, 255, 255, 0.08);
             font-size: 11px;
-            line-height: 1.35;
             text-align: center;
-            transition:
-                color 0.25s ease,
-                background 0.25s ease,
-                box-shadow 0.25s ease;
         }
 
         .size-table thead th {
             position: sticky;
             top: 0;
             z-index: 2;
-            height: 52px;
             color: #ffffff;
             background: #101010;
             font-size: 12px;
-            font-weight: 800;
         }
 
         .size-table th:first-child {
@@ -1226,7 +1258,6 @@
             padding-left: 14px;
             color: #ffffff;
             background: #101010;
-            font-weight: 700;
             text-align: left;
         }
 
@@ -1247,8 +1278,7 @@
                 inset -1px 0 0 var(--selected-border);
         }
 
-        .size-table thead
-        .selected-column {
+        .size-table thead .selected-column {
             color: #000000;
             background: var(--success);
         }
@@ -1259,18 +1289,15 @@
             color: #696970;
             border-top: 1px solid var(--border);
             font-size: 9px;
-            line-height: 1.5;
         }
 
         /* Confirmation */
 
         .confirmation {
-            position: relative;
             display: flex;
             align-items: flex-start;
             gap: 11px;
             grid-column: 1 / -1;
-            margin-top: 2px;
             padding: 14px;
             background: rgba(255, 255, 255, 0.025);
             border:
@@ -1293,26 +1320,47 @@
             line-height: 1.5;
         }
 
-        /* Submit */
+        /* Status and submit */
+
+        .status {
+            display: none;
+            grid-column: 1 / -1;
+            padding: 13px 15px;
+            border-radius: 12px;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .status.error {
+            display: block;
+            color: #ffacb5;
+            background: rgba(255, 92, 108, 0.08);
+            border:
+                1px solid rgba(255, 92, 108, 0.3);
+        }
+
+        .status.success {
+            display: block;
+            color: #98eabb;
+            background: rgba(53, 208, 127, 0.08);
+            border:
+                1px solid rgba(53, 208, 127, 0.3);
+        }
 
         .submit-button {
-            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
             grid-column: 1 / -1;
             width: 100%;
             min-height: 54px;
-            margin-top: 4px;
             padding: 14px 22px;
-            overflow: hidden;
             color: #000000;
             background: #ffffff;
             border-radius: 14px;
             cursor: pointer;
             font-size: 13px;
             font-weight: 800;
-            letter-spacing: 0.04em;
             text-transform: uppercase;
             transition:
                 transform 0.25s ease,
@@ -1320,32 +1368,10 @@
                 opacity 0.25s ease;
         }
 
-        .submit-button::before {
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 55%;
-            height: 100%;
-            content: "";
-            background:
-                linear-gradient(
-                    90deg,
-                    transparent,
-                    rgba(0, 0, 0, 0.12),
-                    transparent
-                );
-            transform: skewX(-20deg);
-            transition: left 0.6s ease;
-        }
-
         .submit-button:hover {
             box-shadow:
                 0 16px 40px rgba(255, 255, 255, 0.16);
             transform: translateY(-2px);
-        }
-
-        .submit-button:hover::before {
-            left: 150%;
         }
 
         .submit-button:disabled {
@@ -1357,19 +1383,12 @@
         .button-content {
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 10px;
         }
 
         .button-arrow {
             width: 17px;
             height: 17px;
-            transition: transform 0.25s ease;
-        }
-
-        .submit-button:hover
-        .button-arrow {
-            transform: translateX(4px);
         }
 
         .loader {
@@ -1383,65 +1402,20 @@
             animation: spin 0.7s linear infinite;
         }
 
-        .submit-button.loading
-        .button-content {
+        .submit-button.loading .button-content {
             display: none;
         }
 
-        .submit-button.loading
-        .loader {
+        .submit-button.loading .loader {
             display: block;
         }
-
-        /* Status */
-
-        .status {
-            display: none;
-            grid-column: 1 / -1;
-            padding: 13px 15px;
-            border-radius: 12px;
-            font-size: 12px;
-            line-height: 1.5;
-            animation: statusIn 0.35s ease;
-        }
-
-        .status.success {
-            display: block;
-            color: #98eabb;
-            background: rgba(53, 208, 127, 0.08);
-            border:
-                1px solid rgba(53, 208, 127, 0.3);
-        }
-
-        .status.error {
-            display: block;
-            color: #ffacb5;
-            background: rgba(255, 92, 108, 0.08);
-            border:
-                1px solid rgba(255, 92, 108, 0.3);
-        }
-
-        .status.warning {
-            display: block;
-            color: var(--warning);
-            background: rgba(255, 211, 108, 0.08);
-            border:
-                1px solid rgba(255, 211, 108, 0.28);
-        }
-
-        /* Footer */
 
         .footer {
             margin-top: 26px;
             color: #4f4f54;
             font-size: 10px;
-            letter-spacing: 0.08em;
-            line-height: 1.6;
             text-align: center;
             text-transform: uppercase;
-            opacity: 0;
-            animation:
-                contentFadeUp 0.8s 4.35s ease forwards;
         }
 
         /* =====================================================
@@ -1470,8 +1444,6 @@
             opacity: 1;
         }
 
-        /* Image modal */
-
         .image-modal-content {
             position: relative;
             width: min(1500px, 96vw);
@@ -1483,27 +1455,17 @@
             border-radius: 20px;
             box-shadow:
                 0 40px 120px rgba(0, 0, 0, 0.9);
-            opacity: 0;
-            transform:
-                scale(0.94)
-                translateY(12px);
-            transition:
-                opacity 0.3s ease,
-                transform 0.3s ease;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
         }
 
-        .modal.active
-        .image-modal-content {
-            opacity: 1;
-            transform:
-                scale(1)
-                translateY(0);
+        .modal.active .image-modal-content {
+            transform: scale(1);
         }
 
         .enlarged-image {
             display: block;
             width: 100%;
-            height: auto;
             max-height: calc(94vh - 55px);
             object-fit: contain;
             background: #eeeeee;
@@ -1514,7 +1476,6 @@
             padding: 17px 70px;
             color: var(--muted);
             font-size: 11px;
-            line-height: 1.5;
             text-align: center;
         }
 
@@ -1528,32 +1489,14 @@
             justify-content: center;
             width: 44px;
             height: 44px;
-            padding: 0 0 4px;
             color: #ffffff;
             background: rgba(0, 0, 0, 0.75);
             border:
                 1px solid rgba(255, 255, 255, 0.22);
             border-radius: 50%;
-            backdrop-filter: blur(10px);
             cursor: pointer;
-            font-size: 29px;
-            line-height: 1;
-            transition:
-                background 0.2s ease,
-                transform 0.2s ease;
+            font-size: 28px;
         }
-
-        .modal-close:hover {
-            background: rgba(255, 255, 255, 0.15);
-            transform: rotate(8deg);
-        }
-
-        .modal-close:focus-visible {
-            outline: 2px solid #ffffff;
-            outline-offset: 3px;
-        }
-
-        /* Success modal */
 
         .success-modal-content {
             width: 100%;
@@ -1562,21 +1505,14 @@
             background: #080808;
             border: 1px solid var(--border);
             border-radius: 24px;
-            box-shadow:
-                0 40px 120px rgba(0, 0, 0, 0.9);
             text-align: center;
-            opacity: 0;
             transform:
                 translateY(18px)
                 scale(0.97);
-            transition:
-                opacity 0.35s ease,
-                transform 0.35s ease;
+            transition: transform 0.35s ease;
         }
 
-        .modal.active
-        .success-modal-content {
-            opacity: 1;
+        .modal.active .success-modal-content {
             transform:
                 translateY(0)
                 scale(1);
@@ -1592,8 +1528,6 @@
             color: #000000;
             background: #ffffff;
             border-radius: 50%;
-            box-shadow:
-                0 0 45px rgba(255, 255, 255, 0.18);
         }
 
         .success-icon svg {
@@ -1604,7 +1538,6 @@
         .success-modal-content h2 {
             margin: 0;
             font-size: 26px;
-            letter-spacing: -0.035em;
         }
 
         .success-modal-content p {
@@ -1627,13 +1560,13 @@
         }
 
         /* =====================================================
-           GENERAL ANIMATIONS
+           ANIMATIONS
         ===================================================== */
 
-        @keyframes contentFadeUp {
+        @keyframes contentIn {
             from {
                 opacity: 0;
-                transform: translateY(24px);
+                transform: translateY(22px);
             }
 
             to {
@@ -1642,13 +1575,15 @@
             }
         }
 
-        @keyframes pulse {
-            0%,
-            100% {
+        @keyframes titleIn {
+            to {
                 opacity: 1;
-                transform: scale(1);
+                filter: blur(0);
+                transform: translateY(0);
             }
+        }
 
+        @keyframes pulse {
             50% {
                 opacity: 0.55;
                 transform: scale(0.75);
@@ -1689,10 +1624,6 @@
         }
 
         @media (max-width: 620px) {
-            .intro-brands {
-                gap: 15px;
-            }
-
             .intro-logo.modec {
                 width: 155px;
                 height: 76px;
@@ -1737,29 +1668,19 @@
 
             .brand {
                 gap: 12px;
-                margin-bottom: 30px;
             }
 
             .logo-box {
                 width: 145px;
                 height: 72px;
-                padding: 12px;
             }
 
             .logo-box.shell {
                 width: 82px;
             }
 
-            .separator {
-                height: 30px;
-            }
-
             h1 {
                 font-size: 40px;
-            }
-
-            .subtitle {
-                font-size: 14px;
             }
 
             .jacket-preview,
@@ -1767,12 +1688,7 @@
                 border-radius: 21px;
             }
 
-            .jacket-preview {
-                margin-bottom: 22px;
-            }
-
             .jacket-preview-header {
-                align-items: flex-start;
                 padding: 15px 16px;
             }
 
@@ -1781,22 +1697,37 @@
             }
 
             .jacket-preview-caption {
-                align-items: flex-start;
                 flex-direction: column;
                 gap: 4px;
-                padding: 12px 15px;
             }
 
-            .zoom-hint {
-                right: 12px;
-                bottom: 12px;
+            .signed-out-view {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .microsoft-login-button {
+                width: 100%;
+            }
+
+            .microsoft-profile {
+                align-items: flex-start;
+                flex-wrap: wrap;
+            }
+
+            .microsoft-profile-details {
+                min-width: calc(100% - 72px);
+            }
+
+            .microsoft-logout-button {
+                width: 100%;
             }
 
             .form-card {
                 padding: 22px 17px;
             }
 
-            .form-grid {
+            .registration-fields {
                 grid-template-columns: 1fr;
                 gap: 17px;
             }
@@ -1818,19 +1749,6 @@
                 grid-column: 1 / -1;
             }
 
-            .size-chart-header {
-                align-items: flex-start;
-                padding: 14px;
-            }
-
-            .size-table {
-                min-width: 1090px;
-            }
-
-            .size-table th:first-child {
-                width: 180px;
-            }
-
             .modal {
                 padding: 10px;
             }
@@ -1840,20 +1758,9 @@
                 border-radius: 15px;
             }
 
-            .enlarged-image {
-                max-height: calc(92vh - 70px);
-            }
-
             .image-modal-footer {
                 padding: 15px 55px 15px 15px;
                 text-align: left;
-            }
-
-            .modal-close {
-                top: 10px;
-                right: 10px;
-                width: 40px;
-                height: 40px;
             }
         }
 
@@ -1879,10 +1786,8 @@
             *,
             *::before,
             *::after {
-                scroll-behavior: auto !important;
                 animation-duration: 0.01ms !important;
                 animation-delay: 0ms !important;
-                animation-iteration-count: 1 !important;
                 transition-duration: 0.01ms !important;
             }
         }
@@ -1891,11 +1796,10 @@
 
 <body>
 
-<!-- =========================================================
-     INTRO ANIMATION
-========================================================= -->
+<!-- Intro -->
 
 <div
+    id="introScreen"
     class="intro-screen"
     aria-hidden="true"
 >
@@ -1907,7 +1811,6 @@
                 <img
                     src="https://i0.wp.com/gcci.gy/wp-content/uploads/2025/01/logo-MODEC-1-Faneeza-Karim.png?ssl=1"
                     alt=""
-                    referrerpolicy="no-referrer"
                 >
             </div>
 
@@ -1917,7 +1820,6 @@
                 <img
                     src="https://1000logos.net/wp-content/uploads/2017/06/Shell-Logo.png"
                     alt=""
-                    referrerpolicy="no-referrer"
                 >
             </div>
 
@@ -1936,9 +1838,7 @@
     </div>
 </div>
 
-<!-- =========================================================
-     FIXED HEADER
-========================================================= -->
+<!-- Fixed header -->
 
 <header
     id="compactHeader"
@@ -1953,7 +1853,6 @@
                 <img
                     src="https://i0.wp.com/gcci.gy/wp-content/uploads/2025/01/logo-MODEC-1-Faneeza-Karim.png?ssl=1"
                     alt="MODEC"
-                    referrerpolicy="no-referrer"
                 >
             </div>
 
@@ -1963,7 +1862,6 @@
                 <img
                     src="https://1000logos.net/wp-content/uploads/2017/06/Shell-Logo.png"
                     alt="Shell"
-                    referrerpolicy="no-referrer"
                 >
             </div>
 
@@ -1984,10 +1882,6 @@
     </div>
 </header>
 
-<!-- =========================================================
-     MAIN CONTENT
-========================================================= -->
-
 <main class="page">
 
     <div class="container">
@@ -2002,7 +1896,6 @@
                     <img
                         src="https://i0.wp.com/gcci.gy/wp-content/uploads/2025/01/logo-MODEC-1-Faneeza-Karim.png?ssl=1"
                         alt="MODEC"
-                        referrerpolicy="no-referrer"
                     >
                 </div>
 
@@ -2012,7 +1905,6 @@
                     <img
                         src="https://1000logos.net/wp-content/uploads/2017/06/Shell-Logo.png"
                         alt="Shell"
-                        referrerpolicy="no-referrer"
                     >
                 </div>
 
@@ -2030,8 +1922,8 @@
                 </h1>
 
                 <p class="subtitle">
-                    Enter your information and select your jacket size.
-                    Please review all details before submitting the form.
+                    Sign in with your corporate Microsoft account,
+                    review the jacket design and select your size.
                     Only one registration is permitted per corporate email.
                 </p>
 
@@ -2039,20 +1931,14 @@
 
         </div>
 
-        <!-- Jacket image -->
+        <!-- Jacket preview -->
 
-        <figure
-            class="jacket-preview"
-            aria-labelledby="jacketPreviewTitle"
-        >
+        <figure class="jacket-preview">
 
             <div class="jacket-preview-header">
 
                 <div>
-                    <h2
-                        id="jacketPreviewTitle"
-                        class="jacket-preview-title"
-                    >
+                    <h2 class="jacket-preview-title">
                         FPSO Gato do Mato Jacket
                     </h2>
 
@@ -2078,14 +1964,9 @@
                     class="jacket-preview-image"
                     src="./assets/images/jacket-preview.jpg"
                     alt="FPSO Gato do Mato black jacket shown from the front, angled, back and side views"
-                    loading="eager"
-                    decoding="async"
                 >
 
-                <span
-                    class="zoom-hint"
-                    aria-hidden="true"
-                >
+                <span class="zoom-hint">
 
                     <svg
                         viewBox="0 0 24 24"
@@ -2093,18 +1974,14 @@
                         stroke="currentColor"
                         stroke-width="2"
                     >
-                        <circle
-                            cx="11"
-                            cy="11"
-                            r="7"
-                        ></circle>
-
+                        <circle cx="11" cy="11" r="7"></circle>
                         <path d="m20 20-4-4"></path>
                         <path d="M11 8v6"></path>
                         <path d="M8 11h6"></path>
                     </svg>
 
                     Click to enlarge
+
                 </span>
 
             </button>
@@ -2124,7 +2001,131 @@
 
         </figure>
 
-        <!-- Registration form -->
+        <!-- Microsoft login -->
+
+        <section
+            class="microsoft-login-card"
+            aria-labelledby="microsoftLoginTitle"
+        >
+
+            <div
+                id="signedOutView"
+                class="signed-out-view"
+            >
+
+                <div class="login-copy">
+
+                    <h2 id="microsoftLoginTitle">
+                        Corporate identification
+                    </h2>
+
+                    <p>
+                        Sign in with your corporate Microsoft account.
+                        Your name, email address and profile photo will
+                        be loaded automatically.
+                    </p>
+
+                </div>
+
+                <button
+                    id="microsoftLoginButton"
+                    class="microsoft-login-button"
+                    type="button"
+                >
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <rect
+                            x="2"
+                            y="2"
+                            width="9"
+                            height="9"
+                            fill="#f25022"
+                        ></rect>
+
+                        <rect
+                            x="13"
+                            y="2"
+                            width="9"
+                            height="9"
+                            fill="#7fba00"
+                        ></rect>
+
+                        <rect
+                            x="2"
+                            y="13"
+                            width="9"
+                            height="9"
+                            fill="#00a4ef"
+                        ></rect>
+
+                        <rect
+                            x="13"
+                            y="13"
+                            width="9"
+                            height="9"
+                            fill="#ffb900"
+                        ></rect>
+                    </svg>
+
+                    <span id="microsoftLoginButtonText">
+                        Sign in with Microsoft
+                    </span>
+
+                </button>
+
+            </div>
+
+            <div
+                id="signedInView"
+                class="microsoft-profile"
+                hidden
+            >
+
+                <img
+                    id="microsoftProfilePhoto"
+                    class="microsoft-profile-photo"
+                    alt="Corporate profile"
+                >
+
+                <div class="microsoft-profile-details">
+
+                    <span class="microsoft-profile-label">
+                        Signed in
+                    </span>
+
+                    <strong id="microsoftProfileName">
+                        —
+                    </strong>
+
+                    <span id="microsoftProfileEmail">
+                        —
+                    </span>
+
+                </div>
+
+                <button
+                    id="microsoftLogoutButton"
+                    class="microsoft-logout-button"
+                    type="button"
+                >
+                    Sign out
+                </button>
+
+            </div>
+
+            <div
+                id="microsoftLoginStatus"
+                class="microsoft-login-status"
+                role="status"
+                aria-live="polite"
+            ></div>
+
+        </section>
+
+        <!-- Form -->
 
         <section
             id="registrationForm"
@@ -2148,10 +2149,22 @@
                 <input
                     type="hidden"
                     name="_subject"
-                    value="FPSO Gato do Mato - Jacket Size Registration"
+                    value="FPSO Gato do Mato - Jacket Registration"
                 >
 
-                <div class="form-grid">
+                <p
+                    id="loginRequiredMessage"
+                    class="login-required-message"
+                >
+                    Sign in with your corporate Microsoft account
+                    to unlock the registration form.
+                </p>
+
+                <fieldset
+                    id="registrationFields"
+                    class="registration-fields"
+                    disabled
+                >
 
                     <!-- Name -->
 
@@ -2168,9 +2181,9 @@
                                 id="name"
                                 name="requester_name"
                                 type="text"
-                                placeholder="Enter your full name"
+                                placeholder="Loaded from Microsoft"
                                 autocomplete="name"
-                                maxlength="120"
+                                readonly
                                 required
                             >
 
@@ -2180,14 +2193,8 @@
                                 fill="none"
                                 stroke="currentColor"
                                 stroke-width="1.7"
-                                aria-hidden="true"
                             >
-                                <circle
-                                    cx="12"
-                                    cy="8"
-                                    r="4"
-                                ></circle>
-
+                                <circle cx="12" cy="8" r="4"></circle>
                                 <path d="M4 21a8 8 0 0 1 16 0"></path>
                             </svg>
 
@@ -2210,9 +2217,9 @@
                                 id="email"
                                 name="email"
                                 type="email"
-                                placeholder="name@company.com"
+                                placeholder="Loaded from Microsoft"
                                 autocomplete="email"
-                                maxlength="160"
+                                readonly
                                 required
                             >
 
@@ -2222,7 +2229,6 @@
                                 fill="none"
                                 stroke="currentColor"
                                 stroke-width="1.7"
-                                aria-hidden="true"
                             >
                                 <rect
                                     x="3"
@@ -2323,22 +2329,6 @@
                                 </option>
                             </select>
 
-                            <svg
-                                class="field-icon"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="1.7"
-                                aria-hidden="true"
-                            >
-                                <path d="M3 21h18"></path>
-                                <path d="M5 21V7l7-4 7 4v14"></path>
-                                <path d="M9 10h1"></path>
-                                <path d="M14 10h1"></path>
-                                <path d="M9 14h1"></path>
-                                <path d="M14 14h1"></path>
-                            </svg>
-
                             <span class="select-arrow"></span>
 
                         </div>
@@ -2383,35 +2373,21 @@
                                 <option value="8XL">8XL</option>
                             </select>
 
-                            <svg
-                                class="field-icon"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="1.7"
-                                aria-hidden="true"
-                            >
-                                <path
-                                    d="M8 4 4 7l3 4 2-1v10h6V10l2 1 3-4-4-3a6 6 0 0 1-8 0Z"
-                                ></path>
-                            </svg>
-
                             <span class="select-arrow"></span>
 
                         </div>
 
                         <p class="field-note">
-                            Select this field to open the measurement chart.
+                            Select this field to open the size chart.
                         </p>
 
                     </div>
 
-                    <!-- Size summary -->
+                    <!-- Summary -->
 
                     <div
                         id="sizeSummary"
                         class="size-summary"
-                        aria-live="polite"
                     >
 
                         <div class="summary-item primary">
@@ -2468,7 +2444,7 @@
 
                         <div class="summary-item">
                             <span class="summary-label">
-                                Sleeve length
+                                Sleeve
                             </span>
 
                             <span
@@ -2498,7 +2474,7 @@
                                     </h2>
 
                                     <p class="size-chart-description">
-                                        All measurements are shown in centimeters.
+                                        All measurements are in centimeters.
                                     </p>
                                 </div>
 
@@ -2516,7 +2492,6 @@
                                 id="sizeChartScroll"
                                 class="size-chart-scroll"
                             >
-
                                 <table
                                     id="sizeTable"
                                     class="size-table"
@@ -2524,13 +2499,10 @@
                                     <thead id="sizeTableHead"></thead>
                                     <tbody id="sizeTableBody"></tbody>
                                 </table>
-
                             </div>
 
                             <p class="chart-note">
                                 Measurements refer to the finished garment.
-                                Use this chart as a reference before confirming
-                                your selection.
                             </p>
 
                         </div>
@@ -2550,8 +2522,9 @@
                         >
 
                         <span class="confirmation-text">
-                            I confirm that I have reviewed the information
-                            and that the selected jacket size is correct.
+                            I confirm that I have reviewed the
+                            information and that the selected
+                            jacket size is correct.
                         </span>
 
                     </label>
@@ -2572,7 +2545,6 @@
                         class="submit-button"
                         type="submit"
                     >
-
                         <span class="button-content">
                             Confirm Jacket Size
 
@@ -2582,7 +2554,6 @@
                                 fill="none"
                                 stroke="currentColor"
                                 stroke-width="2"
-                                aria-hidden="true"
                             >
                                 <path d="M5 12h14"></path>
                                 <path d="m13 6 6 6-6 6"></path>
@@ -2590,10 +2561,9 @@
                         </span>
 
                         <span class="loader"></span>
-
                     </button>
 
-                </div>
+                </fieldset>
 
             </form>
 
@@ -2607,9 +2577,7 @@
 
 </main>
 
-<!-- =========================================================
-     ENLARGED IMAGE MODAL
-========================================================= -->
+<!-- Image modal -->
 
 <div
     id="jacketImageModal"
@@ -2626,7 +2594,7 @@
             id="closeJacketImage"
             class="modal-close"
             type="button"
-            aria-label="Close enlarged image"
+            aria-label="Close image"
         >
             &times;
         </button>
@@ -2634,7 +2602,7 @@
         <img
             class="enlarged-image"
             src="./assets/images/jacket-preview.jpg"
-            alt="Enlarged view of the FPSO Gato do Mato jacket"
+            alt="Enlarged FPSO Gato do Mato jacket"
         >
 
         <div class="image-modal-footer">
@@ -2646,9 +2614,7 @@
 
 </div>
 
-<!-- =========================================================
-     SUCCESS MODAL
-========================================================= -->
+<!-- Success modal -->
 
 <div
     id="successModal"
@@ -2668,7 +2634,6 @@
                 fill="none"
                 stroke="currentColor"
                 stroke-width="2.5"
-                aria-hidden="true"
             >
                 <path d="m5 12 4 4L19 6"></path>
             </svg>
@@ -2680,7 +2645,7 @@
         </h2>
 
         <p id="successMessage">
-            Your jacket size has been successfully registered.
+            Your jacket size has been registered.
         </p>
 
         <button
@@ -2695,24 +2660,92 @@
 </div>
 
 <script>
+    /* =========================================================
+       CONFIGURATION
+    ========================================================= */
+
     /*
-     * Formspree configuration.
+     * Replace these two values with your Microsoft Entra
+     * App Registration information.
+     */
+    const MICROSOFT_CLIENT_ID =
+        "d6368c0b-a4a5-4e64-a36c-f56c2aa373ce";
+
+    const MICROSOFT_TENANT_ID =
+        "73d27a24-8a3e-417d-b34c-b2dc4ba5c26f";
+
+    /*
+     * This generated address must exactly match one of the
+     * SPA Redirect URIs registered in Microsoft Entra ID.
+     */
+    const MICROSOFT_REDIRECT_URI =
+        window.location.origin +
+        window.location.pathname;
+
+    /*
+     * Formspree endpoint.
      */
     const FORM_ENDPOINT =
         "https://formspree.io/f/xrppdvgy";
 
     /*
-     * Local duplicate protection.
-     *
-     * This prevents repeated registration with the same
-     * email in the same browser.
+     * Local duplicate control.
      */
     const STORAGE_KEY =
-        "fpsogdm_jacket_registrations_v1";
+        "fpsogdm_jacket_registrations_v2";
 
-    /*
-     * Size chart data.
-     */
+    /* =========================================================
+       MICROSOFT CONFIGURATION
+    ========================================================= */
+
+    const microsoftConfiguration = {
+        auth: {
+            clientId:
+                MICROSOFT_CLIENT_ID,
+
+            authority:
+                "https://login.microsoftonline.com/" +
+                MICROSOFT_TENANT_ID,
+
+            redirectUri:
+                MICROSOFT_REDIRECT_URI,
+
+            postLogoutRedirectUri:
+                MICROSOFT_REDIRECT_URI
+        },
+
+        cache: {
+            cacheLocation:
+                "sessionStorage",
+
+            storeAuthStateInCookie:
+                false
+        }
+    };
+
+    const microsoftLoginRequest = {
+        scopes: [
+            "User.Read"
+        ],
+
+        prompt:
+            "select_account"
+    };
+
+    const microsoftTokenRequest = {
+        scopes: [
+            "User.Read"
+        ]
+    };
+
+    let microsoftApplication = null;
+    let microsoftAccount = null;
+    let microsoftPhotoUrl = null;
+
+    /* =========================================================
+       SIZE DATA
+    ========================================================= */
+
     const sizes = [
         "XS",
         "S",
@@ -2805,9 +2838,10 @@
         });
     });
 
-    /*
-     * Elements.
-     */
+    /* =========================================================
+       ELEMENTS
+    ========================================================= */
+
     const hero =
         document.getElementById("hero");
 
@@ -2819,6 +2853,12 @@
 
     const registrationForm =
         document.getElementById("registrationForm");
+
+    const registrationFields =
+        document.getElementById("registrationFields");
+
+    const loginRequiredMessage =
+        document.getElementById("loginRequiredMessage");
 
     const form =
         document.getElementById("jacketForm");
@@ -2850,29 +2890,11 @@
     const sizeSummary =
         document.getElementById("sizeSummary");
 
-    const summarySize =
-        document.getElementById("summarySize");
-
-    const summaryBackLength =
-        document.getElementById("summaryBackLength");
-
-    const summaryChest =
-        document.getElementById("summaryChest");
-
-    const summaryHem =
-        document.getElementById("summaryHem");
-
-    const summarySleeve =
-        document.getElementById("summarySleeve");
-
     const sizeChartSection =
         document.getElementById("sizeChartSection");
 
     const sizeChartScroll =
         document.getElementById("sizeChartScroll");
-
-    const closeSizeChartButton =
-        document.getElementById("closeSizeChart");
 
     const sizeTableHead =
         document.getElementById("sizeTableHead");
@@ -2880,39 +2902,59 @@
     const sizeTableBody =
         document.getElementById("sizeTableBody");
 
-    const openJacketImageButton =
-        document.getElementById("openJacketImage");
+    const signedOutView =
+        document.getElementById("signedOutView");
+
+    const signedInView =
+        document.getElementById("signedInView");
+
+    const microsoftLoginButton =
+        document.getElementById("microsoftLoginButton");
+
+    const microsoftLoginButtonText =
+        document.getElementById("microsoftLoginButtonText");
+
+    const microsoftLogoutButton =
+        document.getElementById("microsoftLogoutButton");
+
+    const microsoftLoginStatus =
+        document.getElementById("microsoftLoginStatus");
+
+    const microsoftProfilePhoto =
+        document.getElementById("microsoftProfilePhoto");
+
+    const microsoftProfileName =
+        document.getElementById("microsoftProfileName");
+
+    const microsoftProfileEmail =
+        document.getElementById("microsoftProfileEmail");
 
     const jacketImageModal =
         document.getElementById("jacketImageModal");
 
-    const closeJacketImageButton =
-        document.getElementById("closeJacketImage");
-
     const successModal =
         document.getElementById("successModal");
 
-    const closeSuccessModalButton =
-        document.getElementById("closeSuccessModal");
-
-    const successMessage =
-        document.getElementById("successMessage");
-
-    const requiredFields = [
-        nameInput,
-        emailInput,
-        departmentSelect,
-        sizeSelect,
-        confirmationInput
-    ];
-
     let isSubmitting = false;
-    let duplicateEmailDetected = false;
-    let previousImageFocus = null;
+    let registrationCompleted = false;
 
-    /*
-     * Fixed header.
-     */
+    /* =========================================================
+       INTRO CLEANUP
+    ========================================================= */
+
+    window.setTimeout(() => {
+        const intro =
+            document.getElementById("introScreen");
+
+        if (intro) {
+            intro.remove();
+        }
+    }, 4500);
+
+    /* =========================================================
+       FIXED HEADER
+    ========================================================= */
+
     function setCompactHeaderVisibility(visible) {
         compactHeader.classList.toggle(
             "visible",
@@ -2939,22 +2981,6 @@
             );
 
         heroObserver.observe(hero);
-
-    } else {
-        window.addEventListener(
-            "scroll",
-            () => {
-                const rectangle =
-                    hero.getBoundingClientRect();
-
-                setCompactHeaderVisibility(
-                    rectangle.bottom <= 0
-                );
-            },
-            {
-                passive: true
-            }
-        );
     }
 
     compactFormButton.addEventListener(
@@ -2967,11 +2993,12 @@
         }
     );
 
-    /*
-     * Modal body lock.
-     */
+    /* =========================================================
+       MODAL HELPERS
+    ========================================================= */
+
     function updateBodyLock() {
-        const anyModalOpen =
+        const open =
             jacketImageModal.classList.contains(
                 "active"
             ) ||
@@ -2981,17 +3008,11 @@
 
         document.body.classList.toggle(
             "modal-open",
-            anyModalOpen
+            open
         );
     }
 
-    /*
-     * Jacket image modal.
-     */
-    function openJacketImageModal() {
-        previousImageFocus =
-            document.activeElement;
-
+    function openJacketImage() {
         jacketImageModal.classList.add(
             "active"
         );
@@ -3003,10 +3024,12 @@
 
         updateBodyLock();
 
-        closeJacketImageButton.focus();
+        document
+            .getElementById("closeJacketImage")
+            .focus();
     }
 
-    function closeJacketImageModal() {
+    function closeJacketImage() {
         jacketImageModal.classList.remove(
             "active"
         );
@@ -3018,61 +3041,56 @@
 
         updateBodyLock();
 
-        if (
-            previousImageFocus &&
-            typeof previousImageFocus.focus ===
-                "function"
-        ) {
-            previousImageFocus.focus();
-        }
+        document
+            .getElementById("openJacketImage")
+            .focus();
     }
 
-    openJacketImageButton.addEventListener(
-        "click",
-        openJacketImageModal
-    );
+    document
+        .getElementById("openJacketImage")
+        .addEventListener(
+            "click",
+            openJacketImage
+        );
 
-    closeJacketImageButton.addEventListener(
-        "click",
-        closeJacketImageModal
-    );
+    document
+        .getElementById("closeJacketImage")
+        .addEventListener(
+            "click",
+            closeJacketImage
+        );
 
     jacketImageModal.addEventListener(
         "click",
         event => {
-            if (
-                event.target ===
-                jacketImageModal
-            ) {
-                closeJacketImageModal();
+            if (event.target === jacketImageModal) {
+                closeJacketImage();
             }
         }
     );
 
-    /*
-     * Build size table.
-     */
+    /* =========================================================
+       SIZE TABLE
+    ========================================================= */
+
     function buildSizeTable() {
         const headerRow =
             document.createElement("tr");
 
-        const measurementHeader =
+        const firstHeader =
             document.createElement("th");
 
-        measurementHeader.scope = "col";
-
-        measurementHeader.textContent =
+        firstHeader.textContent =
             "Measurement";
 
         headerRow.appendChild(
-            measurementHeader
+            firstHeader
         );
 
         sizes.forEach(size => {
             const cell =
                 document.createElement("th");
 
-            cell.scope = "col";
             cell.textContent = size;
             cell.dataset.size = size;
 
@@ -3090,8 +3108,8 @@
             const rowHeader =
                 document.createElement("th");
 
-            rowHeader.scope = "row";
-            rowHeader.textContent = row.label;
+            rowHeader.textContent =
+                row.label;
 
             tableRow.appendChild(
                 rowHeader
@@ -3103,10 +3121,13 @@
                         document.createElement("td");
 
                     cell.textContent = value;
+
                     cell.dataset.size =
                         sizes[index];
 
-                    tableRow.appendChild(cell);
+                    tableRow.appendChild(
+                        cell
+                    );
                 }
             );
 
@@ -3118,9 +3139,6 @@
 
     buildSizeTable();
 
-    /*
-     * Size chart.
-     */
     function openSizeChart() {
         sizeChartSection.classList.add(
             "visible"
@@ -3169,18 +3187,28 @@
             return;
         }
 
-        summarySize.textContent = size;
+        document.getElementById(
+            "summarySize"
+        ).textContent = size;
 
-        summaryBackLength.textContent =
+        document.getElementById(
+            "summaryBackLength"
+        ).textContent =
             `${measurements.backLength} cm`;
 
-        summaryChest.textContent =
+        document.getElementById(
+            "summaryChest"
+        ).textContent =
             `${measurements.chest} cm`;
 
-        summaryHem.textContent =
+        document.getElementById(
+            "summaryHem"
+        ).textContent =
             `${measurements.hem} cm`;
 
-        summarySleeve.textContent =
+        document.getElementById(
+            "summarySleeve"
+        ).textContent =
             `${measurements.sleeve} cm`;
 
         sizeSummary.classList.add(
@@ -3194,16 +3222,14 @@
             );
 
         if (selectedHeader) {
-            window.requestAnimationFrame(() => {
-                const left =
-                    selectedHeader.offsetLeft -
-                    sizeChartScroll.clientWidth / 2 +
-                    selectedHeader.offsetWidth / 2;
+            const left =
+                selectedHeader.offsetLeft -
+                sizeChartScroll.clientWidth / 2 +
+                selectedHeader.offsetWidth / 2;
 
-                sizeChartScroll.scrollTo({
-                    left: Math.max(0, left),
-                    behavior: "smooth"
-                });
+            sizeChartScroll.scrollTo({
+                left: Math.max(0, left),
+                behavior: "smooth"
             });
         }
     }
@@ -3222,23 +3248,26 @@
         "change",
         () => {
             openSizeChart();
+
             updateSelectedSize(
                 sizeSelect.value
             );
         }
     );
 
-    closeSizeChartButton.addEventListener(
-        "click",
-        closeSizeChart
-    );
+    document
+        .getElementById("closeSizeChart")
+        .addEventListener(
+            "click",
+            closeSizeChart
+        );
 
-    /*
-     * Form status.
-     */
+    /* =========================================================
+       STATUS
+    ========================================================= */
+
     function showStatus(message, type) {
         statusElement.textContent = message;
-
         statusElement.className =
             `status ${type}`;
     }
@@ -3248,22 +3277,29 @@
         statusElement.className = "status";
     }
 
-    function setLoading(loading) {
-        isSubmitting = loading;
+    function showMicrosoftStatus(
+        message,
+        type
+    ) {
+        microsoftLoginStatus.textContent =
+            message;
 
-        submitButton.disabled =
-            loading ||
-            duplicateEmailDetected;
-
-        submitButton.classList.toggle(
-            "loading",
-            loading
-        );
+        microsoftLoginStatus.className =
+            `microsoft-login-status ${type}`;
     }
 
-    /*
-     * Local duplicate protection.
-     */
+    function clearMicrosoftStatus() {
+        microsoftLoginStatus.textContent =
+            "";
+
+        microsoftLoginStatus.className =
+            "microsoft-login-status";
+    }
+
+    /* =========================================================
+       DUPLICATE CONTROL
+    ========================================================= */
+
     function normalizeEmail(email) {
         return String(email || "")
             .trim()
@@ -3271,22 +3307,22 @@
     }
 
     async function createEmailFingerprint(email) {
-        const normalizedEmail =
+        const normalized =
             normalizeEmail(email);
 
         if (
             window.crypto &&
             window.crypto.subtle
         ) {
-            const encodedEmail =
+            const bytes =
                 new TextEncoder().encode(
-                    normalizedEmail
+                    normalized
                 );
 
             const digest =
-                await window.crypto.subtle.digest(
+                await crypto.subtle.digest(
                     "SHA-256",
-                    encodedEmail
+                    bytes
                 );
 
             return Array
@@ -3303,13 +3339,11 @@
 
         for (
             let index = 0;
-            index < normalizedEmail.length;
+            index < normalized.length;
             index++
         ) {
             hash ^=
-                normalizedEmail.charCodeAt(
-                    index
-                );
+                normalized.charCodeAt(index);
 
             hash = Math.imul(
                 hash,
@@ -3317,197 +3351,463 @@
             );
         }
 
-        return `fallback-${(
-            hash >>> 0
-        ).toString(16)}`;
+        return String(hash >>> 0);
     }
 
-    function readRegistrationRecords() {
+    function readRegistrations() {
         try {
-            const savedRecords =
+            const value =
                 localStorage.getItem(
                     STORAGE_KEY
                 );
 
-            if (!savedRecords) {
-                return [];
-            }
-
             const records =
-                JSON.parse(savedRecords);
+                value
+                    ? JSON.parse(value)
+                    : [];
 
             return Array.isArray(records)
                 ? records
                 : [];
 
-        } catch (error) {
-            console.warn(
-                "Unable to read local registration records.",
-                error
-            );
-
+        } catch {
             return [];
         }
     }
 
-    function saveRegistrationRecords(records) {
-        try {
-            localStorage.setItem(
-                STORAGE_KEY,
-                JSON.stringify(records)
+    async function hasExistingRegistration(
+        email
+    ) {
+        const fingerprint =
+            await createEmailFingerprint(
+                email
             );
-        } catch (error) {
-            console.warn(
-                "Unable to save local registration record.",
-                error
-            );
-        }
+
+        return readRegistrations()
+            .includes(fingerprint);
     }
 
-    async function hasExistingRegistration(email) {
+    async function saveRegistration(email) {
         const fingerprint =
             await createEmailFingerprint(
                 email
             );
 
         const records =
-            readRegistrationRecords();
-
-        return records.includes(
-            fingerprint
-        );
-    }
-
-    async function saveCompletedRegistration(email) {
-        const fingerprint =
-            await createEmailFingerprint(
-                email
-            );
-
-        const records =
-            readRegistrationRecords();
+            readRegistrations();
 
         if (!records.includes(fingerprint)) {
             records.push(fingerprint);
 
-            saveRegistrationRecords(
-                records
+            localStorage.setItem(
+                STORAGE_KEY,
+                JSON.stringify(records)
             );
         }
     }
 
-    async function checkDuplicateEmail() {
+    /* =========================================================
+       MICROSOFT LOGIN
+    ========================================================= */
+
+    function createInitialsImage(name) {
+        const initials =
+            String(name || "User")
+                .split(/\s+/)
+                .filter(Boolean)
+                .slice(0, 2)
+                .map(part =>
+                    part[0].toUpperCase()
+                )
+                .join("");
+
+        const svg =
+            `<svg xmlns="http://www.w3.org/2000/svg" ` +
+            `width="128" height="128">` +
+            `<rect width="128" height="128" fill="#202020"/>` +
+            `<text x="64" y="76" text-anchor="middle" ` +
+            `font-family="Arial" font-size="42" ` +
+            `fill="#ffffff">${initials}</text>` +
+            `</svg>`;
+
+        return (
+            "data:image/svg+xml;charset=utf-8," +
+            encodeURIComponent(svg)
+        );
+    }
+
+    function setMicrosoftLoading(loading) {
+        microsoftLoginButton.disabled =
+            loading;
+
+        microsoftLoginButtonText.textContent =
+            loading
+                ? "Signing in..."
+                : "Sign in with Microsoft";
+    }
+
+    function setSignedOutInterface() {
+        microsoftAccount = null;
+
+        signedOutView.hidden = false;
+        signedInView.hidden = true;
+
+        registrationFields.disabled = true;
+        loginRequiredMessage.classList.remove(
+            "hidden"
+        );
+
+        nameInput.value = "";
+        emailInput.value = "";
+
+        registrationCompleted = false;
+
+        clearStatus();
+    }
+
+    async function setSignedInInterface(
+        profile
+    ) {
+        const displayName =
+            profile.displayName ||
+            microsoftAccount?.name ||
+            "Microsoft user";
+
         const email =
-            normalizeEmail(
-                emailInput.value
-            );
+            profile.mail ||
+            profile.userPrincipalName ||
+            microsoftAccount?.username ||
+            "";
 
-        if (
-            !email ||
-            !emailInput.checkValidity()
-        ) {
-            duplicateEmailDetected = false;
+        microsoftProfileName.textContent =
+            displayName;
 
-            emailInput.classList.remove(
-                "invalid"
-            );
+        microsoftProfileEmail.textContent =
+            email;
 
-            emailNote.classList.remove(
-                "error"
-            );
+        nameInput.value =
+            displayName;
 
-            emailNote.textContent =
-                "Only one registration is allowed per corporate email.";
+        emailInput.value =
+            email;
 
-            submitButton.disabled =
-                isSubmitting;
+        signedOutView.hidden = true;
+        signedInView.hidden = false;
 
-            return false;
-        }
+        registrationFields.disabled = false;
 
-        const duplicate =
+        loginRequiredMessage.classList.add(
+            "hidden"
+        );
+
+        const alreadyRegistered =
             await hasExistingRegistration(
                 email
             );
 
-        duplicateEmailDetected =
-            duplicate;
-
-        emailInput.classList.toggle(
-            "invalid",
-            duplicate
-        );
-
-        emailNote.classList.toggle(
-            "error",
-            duplicate
-        );
-
-        submitButton.disabled =
-            isSubmitting ||
-            duplicate;
-
-        if (duplicate) {
-            emailNote.textContent =
-                "A registration has already been submitted for this email on this browser.";
+        if (alreadyRegistered) {
+            registrationCompleted = true;
+            registrationFields.disabled = true;
 
             showStatus(
-                "This corporate email already has a jacket size registration.",
+                "A jacket size registration has already been submitted for this corporate email on this browser.",
                 "error"
             );
-        } else {
-            emailNote.textContent =
-                "Only one registration is allowed per corporate email.";
         }
-
-        return duplicate;
     }
 
-    emailInput.addEventListener(
-        "blur",
-        checkDuplicateEmail
-    );
+    async function getGraphToken() {
+        const request = {
+            ...microsoftTokenRequest,
+            account:
+                microsoftAccount
+        };
 
-    emailInput.addEventListener(
-        "change",
-        checkDuplicateEmail
-    );
+        try {
+            const response =
+                await microsoftApplication
+                    .acquireTokenSilent(
+                        request
+                    );
 
-    emailInput.addEventListener(
-        "input",
-        () => {
-            duplicateEmailDetected = false;
+            return response.accessToken;
 
-            emailInput.classList.remove(
-                "invalid"
+        } catch {
+            const response =
+                await microsoftApplication
+                    .acquireTokenPopup(
+                        request
+                    );
+
+            return response.accessToken;
+        }
+    }
+
+    async function loadMicrosoftProfile(
+        accessToken
+    ) {
+        const response = await fetch(
+            "https://graph.microsoft.com/v1.0/me" +
+            "?$select=id,displayName,mail,userPrincipalName",
+            {
+                headers: {
+                    Authorization:
+                        `Bearer ${accessToken}`
+                }
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                "Your Microsoft profile could not be loaded."
+            );
+        }
+
+        return response.json();
+    }
+
+    async function loadMicrosoftPhoto(
+        accessToken,
+        displayName
+    ) {
+        if (microsoftPhotoUrl) {
+            URL.revokeObjectURL(
+                microsoftPhotoUrl
             );
 
-            emailNote.classList.remove(
+            microsoftPhotoUrl = null;
+        }
+
+        const response = await fetch(
+            "https://graph.microsoft.com/v1.0/me/photo/$value",
+            {
+                headers: {
+                    Authorization:
+                        `Bearer ${accessToken}`
+                }
+            }
+        );
+
+        if (response.ok) {
+            const blob =
+                await response.blob();
+
+            microsoftPhotoUrl =
+                URL.createObjectURL(blob);
+
+            microsoftProfilePhoto.src =
+                microsoftPhotoUrl;
+
+        } else {
+            microsoftProfilePhoto.src =
+                createInitialsImage(
+                    displayName
+                );
+        }
+    }
+
+    async function completeMicrosoftLogin(
+        account
+    ) {
+        microsoftAccount = account;
+
+        microsoftApplication.setActiveAccount(
+            account
+        );
+
+        showMicrosoftStatus(
+            "Loading your Microsoft profile...",
+            "loading"
+        );
+
+        const accessToken =
+            await getGraphToken();
+
+        const profile =
+            await loadMicrosoftProfile(
+                accessToken
+            );
+
+        await setSignedInInterface(
+            profile
+        );
+
+        await loadMicrosoftPhoto(
+            accessToken,
+            profile.displayName
+        );
+
+        clearMicrosoftStatus();
+    }
+
+    async function initializeMicrosoftLogin() {
+        if (!window.msal) {
+            showMicrosoftStatus(
+                "The Microsoft authentication library could not be loaded.",
                 "error"
             );
 
-            emailNote.textContent =
-                "Only one registration is allowed per corporate email.";
+            return;
+        }
 
-            submitButton.disabled =
-                isSubmitting;
+        if (
+            MICROSOFT_CLIENT_ID.includes("YOUR_") ||
+            MICROSOFT_TENANT_ID.includes("YOUR_")
+        ) {
+            showMicrosoftStatus(
+                "Configure the Microsoft Client ID and Tenant ID in the JavaScript.",
+                "error"
+            );
+
+            return;
+        }
+
+        microsoftApplication =
+            new msal.PublicClientApplication(
+                microsoftConfiguration
+            );
+
+        setSignedOutInterface();
+
+        try {
+            const accounts =
+                microsoftApplication
+                    .getAllAccounts();
+
+            if (accounts.length > 0) {
+                await completeMicrosoftLogin(
+                    accounts[0]
+                );
+            }
+
+        } catch (error) {
+            console.error(error);
+
+            showMicrosoftStatus(
+                "Microsoft authentication could not be initialized.",
+                "error"
+            );
+        }
+    }
+
+    microsoftLoginButton.addEventListener(
+        "click",
+        async () => {
+            clearMicrosoftStatus();
+            setMicrosoftLoading(true);
+
+            try {
+                if (!microsoftApplication) {
+                    throw new Error(
+                        "Microsoft authentication is not configured."
+                    );
+                }
+
+                const response =
+                    await microsoftApplication
+                        .loginPopup(
+                            microsoftLoginRequest
+                        );
+
+                await completeMicrosoftLogin(
+                    response.account
+                );
+
+            } catch (error) {
+                console.error(error);
+
+                if (
+                    error.errorCode ===
+                    "user_cancelled"
+                ) {
+                    showMicrosoftStatus(
+                        "Microsoft sign-in was cancelled.",
+                        "error"
+                    );
+                } else {
+                    showMicrosoftStatus(
+                        error.message ||
+                        "Microsoft sign-in could not be completed.",
+                        "error"
+                    );
+                }
+
+            } finally {
+                setMicrosoftLoading(false);
+            }
         }
     );
 
-    /*
-     * Validation.
-     */
-    function validateForm() {
-        let valid = true;
-        let firstInvalidField = null;
+    microsoftLogoutButton.addEventListener(
+        "click",
+        async () => {
+            clearMicrosoftStatus();
 
-        requiredFields.forEach(field => {
+            try {
+                if (
+                    microsoftApplication &&
+                    microsoftAccount
+                ) {
+                    await microsoftApplication
+                        .logoutPopup({
+                            account:
+                                microsoftAccount,
+
+                            postLogoutRedirectUri:
+                                MICROSOFT_REDIRECT_URI
+                        });
+                }
+
+            } catch (error) {
+                console.warn(error);
+
+            } finally {
+                form.reset();
+                clearSelectedSize();
+                closeSizeChart();
+
+                sizeSummary.classList.remove(
+                    "visible"
+                );
+
+                setSignedOutInterface();
+            }
+        }
+    );
+
+    /* =========================================================
+       FORM SUBMISSION
+    ========================================================= */
+
+    function setFormLoading(loading) {
+        isSubmitting = loading;
+
+        submitButton.disabled =
+            loading ||
+            registrationCompleted;
+
+        submitButton.classList.toggle(
+            "loading",
+            loading
+        );
+    }
+
+    function validateForm() {
+        const fields = [
+            nameInput,
+            emailInput,
+            departmentSelect,
+            sizeSelect,
+            confirmationInput
+        ];
+
+        let firstInvalid = null;
+
+        fields.forEach(field => {
             const invalid =
                 !field.checkValidity();
 
-            if (
-                field.type !== "checkbox"
-            ) {
+            if (field.type !== "checkbox") {
                 field.classList.toggle(
                     "invalid",
                     invalid
@@ -3516,113 +3816,75 @@
 
             if (
                 invalid &&
-                !firstInvalidField
+                !firstInvalid
             ) {
-                firstInvalidField = field;
-            }
-
-            if (invalid) {
-                valid = false;
+                firstInvalid = field;
             }
         });
 
-        if (
-            !valid &&
-            firstInvalidField
-        ) {
-            firstInvalidField.focus();
+        if (firstInvalid) {
+            firstInvalid.focus();
 
             showStatus(
                 "Please complete all required fields correctly.",
                 "error"
             );
+
+            return false;
         }
 
-        return valid;
+        return true;
     }
 
-    requiredFields.forEach(field => {
-        const eventName =
-            field.tagName === "SELECT" ||
-            field.type === "checkbox"
-                ? "change"
-                : "input";
-
-        field.addEventListener(
-            eventName,
-            () => {
-                if (
-                    field !== emailInput
-                ) {
-                    field.classList.remove(
-                        "invalid"
-                    );
-                }
-
-                if (
-                    form.checkValidity() &&
-                    !duplicateEmailDetected
-                ) {
-                    clearStatus();
-                }
-            }
-        );
-    });
-
-    /*
-     * Form submission.
-     */
     form.addEventListener(
         "submit",
         async event => {
             event.preventDefault();
 
-            if (isSubmitting) {
+            if (
+                isSubmitting ||
+                registrationCompleted
+            ) {
                 return;
             }
 
             clearStatus();
 
+            if (!microsoftAccount) {
+                showStatus(
+                    "Sign in with your corporate Microsoft account before submitting.",
+                    "error"
+                );
+
+                return;
+            }
+
             if (!validateForm()) {
                 return;
             }
 
-            const normalizedEmail =
+            const email =
                 normalizeEmail(
                     emailInput.value
                 );
 
-            const duplicate =
+            if (
                 await hasExistingRegistration(
-                    normalizedEmail
-                );
-
-            if (duplicate) {
-                duplicateEmailDetected = true;
-
-                emailInput.classList.add(
-                    "invalid"
-                );
-
-                emailNote.classList.add(
-                    "error"
-                );
-
-                emailNote.textContent =
-                    "A registration has already been submitted for this email on this browser.";
+                    email
+                )
+            ) {
+                registrationCompleted = true;
+                registrationFields.disabled = true;
 
                 showStatus(
-                    "This corporate email already has a jacket size registration.",
+                    "This corporate email already has a jacket size registration on this browser.",
                     "error"
                 );
-
-                emailInput.focus();
-                submitButton.disabled = true;
 
                 return;
             }
 
-            setLoading(true);
+            setFormLoading(true);
 
             try {
                 const selectedSize =
@@ -3673,9 +3935,6 @@
                     );
                 }
 
-                const requesterName =
-                    nameInput.value.trim();
-
                 const response = await fetch(
                     FORM_ENDPOINT,
                     {
@@ -3686,7 +3945,8 @@
                                 "application/json"
                         },
 
-                        body: formData
+                        body:
+                            formData
                     }
                 );
 
@@ -3695,34 +3955,36 @@
                         "The form could not be submitted.";
 
                     try {
-                        const responseData =
+                        const data =
                             await response.json();
 
-                        if (
-                            responseData.errors?.length
-                        ) {
+                        if (data.errors?.length) {
                             message =
-                                responseData.errors
-                                    .map(error =>
-                                        error.message
+                                data.errors
+                                    .map(item =>
+                                        item.message
                                     )
                                     .join(" ");
                         }
                     } catch {
                         /*
-                         * Keep the default message.
+                         * Keep default message.
                          */
                     }
 
                     throw new Error(message);
                 }
 
-                await saveCompletedRegistration(
-                    normalizedEmail
+                await saveRegistration(
+                    email
                 );
 
-                successMessage.textContent =
-                    `${requesterName}, jacket size ${selectedSize} ` +
+                registrationCompleted = true;
+
+                document.getElementById(
+                    "successMessage"
+                ).textContent =
+                    `${nameInput.value}, jacket size ${selectedSize} ` +
                     "has been successfully registered.";
 
                 successModal.classList.add(
@@ -3736,46 +3998,34 @@
 
                 updateBodyLock();
 
-                form.reset();
+                registrationFields.disabled =
+                    true;
 
-                clearSelectedSize();
-                closeSizeChart();
-
-                sizeSummary.classList.remove(
-                    "visible"
-                );
-
-                duplicateEmailDetected = false;
-
-                emailNote.classList.remove(
-                    "error"
-                );
-
-                emailNote.textContent =
-                    "Only one registration is allowed per corporate email.";
-
-                clearStatus();
-
-                closeSuccessModalButton.focus();
+                document
+                    .getElementById(
+                        "closeSuccessModal"
+                    )
+                    .focus();
 
             } catch (error) {
                 console.error(error);
 
                 showStatus(
                     error.message ||
-                    "An error occurred during submission. Please try again.",
+                    "An error occurred. Please try again.",
                     "error"
                 );
 
             } finally {
-                setLoading(false);
+                setFormLoading(false);
             }
         }
     );
 
-    /*
-     * Success modal.
-     */
+    /* =========================================================
+       SUCCESS MODAL
+    ========================================================= */
+
     function closeSuccessModal() {
         successModal.classList.remove(
             "active"
@@ -3787,30 +4037,28 @@
         );
 
         updateBodyLock();
-
-        nameInput.focus();
     }
 
-    closeSuccessModalButton.addEventListener(
-        "click",
-        closeSuccessModal
-    );
+    document
+        .getElementById("closeSuccessModal")
+        .addEventListener(
+            "click",
+            closeSuccessModal
+        );
 
     successModal.addEventListener(
         "click",
         event => {
-            if (
-                event.target ===
-                successModal
-            ) {
+            if (event.target === successModal) {
                 closeSuccessModal();
             }
         }
     );
 
-    /*
-     * Escape key.
-     */
+    /* =========================================================
+       ESCAPE KEY
+    ========================================================= */
+
     document.addEventListener(
         "keydown",
         event => {
@@ -3823,7 +4071,7 @@
                     "active"
                 )
             ) {
-                closeJacketImageModal();
+                closeJacketImage();
                 return;
             }
 
@@ -3836,15 +4084,15 @@
                 return;
             }
 
-            if (
-                sizeChartSection.classList.contains(
-                    "visible"
-                )
-            ) {
-                closeSizeChart();
-            }
+            closeSizeChart();
         }
     );
+
+    /* =========================================================
+       INITIALIZATION
+    ========================================================= */
+
+    initializeMicrosoftLogin();
 </script>
 
 </body>
