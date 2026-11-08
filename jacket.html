@@ -3206,6 +3206,12 @@
                 MICROSOFT_TENANT_ID
             );
 
+            authUrl.searchParams.set(
+                "return_to",
+                window.location.origin +
+                window.location.pathname
+            );
+
             window.location.assign(
                 authUrl.href
             );
@@ -3231,6 +3237,12 @@
             authUrl.searchParams.set(
                 "action",
                 "logout"
+            );
+
+            authUrl.searchParams.set(
+                "return_to",
+                window.location.origin +
+                window.location.pathname
             );
 
             window.location.assign(
