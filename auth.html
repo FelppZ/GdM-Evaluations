@@ -14,6 +14,15 @@
         src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js"
     ></script>
 
+    <script>
+        /* CDN de reserva caso o da Microsoft esteja bloqueado/indisponível */
+        if (!window.msal) {
+            document.write(
+                '<script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@2.38.3/lib/msal-browser.min.js"><\/script>'
+            );
+        }
+    </script>
+
     <style>
         :root {
             color-scheme: dark;
@@ -217,11 +226,61 @@
         window.location.origin +
         window.location.pathname;
 
-    const INDEX_URL =
+    /*
+     * Página para onde voltar depois do login/logout.
+     * Antes estava fixo em ./index.html (arquivo inexistente no projeto).
+     * Agora a página de origem envia ?return_to=..., e o valor é guardado
+     * no sessionStorage para sobreviver ao redirecionamento da Microsoft.
+     */
+    const DEFAULT_RETURN_URL =
         new URL(
-            "./index.html",
+            "./jacket.html",
             MICROSOFT_REDIRECT_URI
         ).href;
+
+    const RETURN_URL_STORAGE_KEY =
+        "gdm_microsoft_return_url";
+
+    const RETRY_STORAGE_KEY =
+        "gdm_microsoft_auth_retry";
+
+    function isSafeReturnUrl(value) {
+        try {
+            const url =
+                new URL(value, window.location.href);
+
+            return (
+                url.origin === window.location.origin &&
+                url.pathname !== window.location.pathname
+            );
+        } catch (error) {
+            return false;
+        }
+    }
+
+    function resolveReturnUrl() {
+        const requested =
+            new URLSearchParams(window.location.search)
+                .get("return_to");
+
+        if (requested && isSafeReturnUrl(requested)) {
+            sessionStorage.setItem(
+                RETURN_URL_STORAGE_KEY,
+                new URL(requested, window.location.href).href
+            );
+        }
+
+        const stored =
+            sessionStorage.getItem(
+                RETURN_URL_STORAGE_KEY
+            );
+
+        return stored && isSafeReturnUrl(stored)
+            ? stored
+            : DEFAULT_RETURN_URL;
+    }
+
+    const INDEX_URL = resolveReturnUrl();
 
     const PROFILE_STORAGE_KEY =
         "gdm_microsoft_profile";
@@ -295,9 +354,17 @@
 
         authLoader.style.display = "none";
 
+        const code =
+            error?.errorCode
+                ? "[" + error.errorCode + "] "
+                : "";
+
         authError.textContent =
-            error?.message ||
-            "Microsoft authentication could not be completed.";
+            code +
+            (
+                error?.message ||
+                "Microsoft authentication could not be completed."
+            );
 
         authError.classList.add("visible");
         backButton.classList.add("visible");
@@ -582,6 +649,14 @@
             "true"
         );
 
+        sessionStorage.removeItem(
+            RETURN_URL_STORAGE_KEY
+        );
+
+        sessionStorage.removeItem(
+            RETRY_STORAGE_KEY
+        );
+
         setStatus(
             "Authentication successful. Returning to the registration form..."
         );
@@ -680,6 +755,31 @@
                 );
 
         } catch (error) {
+            /*
+             * Se um login anterior foi interrompido, o MSAL fica preso em
+             * "interaction_in_progress". Limpa o estado e tenta uma vez.
+             */
+            if (
+                error?.errorCode === "interaction_in_progress" &&
+                !sessionStorage.getItem(RETRY_STORAGE_KEY)
+            ) {
+                sessionStorage.setItem(
+                    RETRY_STORAGE_KEY,
+                    "1"
+                );
+
+                Object.keys(sessionStorage)
+                    .filter(key =>
+                        key.includes("interaction.status")
+                    )
+                    .forEach(key =>
+                        sessionStorage.removeItem(key)
+                    );
+
+                window.location.reload();
+                return;
+            }
+
             showError(error);
         }
     }
